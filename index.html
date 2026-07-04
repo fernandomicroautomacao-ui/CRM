@@ -1635,6 +1635,10 @@
                 <span class="label">Clientes</span>
                 <span class="badge" id="clientCount">0</span>
             </a>
+            <a data-section="email-marketing">
+                <span class="icon">✉️</span>
+                <span class="label">Email Marketing</span>
+            </a>
             <a data-section="relatorios">
                 <span class="icon">📈</span>
                 <span class="label">Relatórios</span>
@@ -1746,6 +1750,82 @@
                 <div class="empty-state">
                     <span class="emoji-big">📅</span>
                     <p>Selecione uma data no calendário</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="section-email-marketing">
+            <div class="header-section">
+                <h3 style="font-size:20px;font-weight:700;margin-bottom:20px;">✉️ Email Marketing</h3>
+                <div style="display:flex;gap:10px;margin-bottom:20px;">
+                    <button class="btn btn-primary" onclick="abrirModalCampanha()">➕ Nova Campanha</button>
+                    <button class="btn btn-outline" onclick="abrirModalTemplate()">📄 Novo Template</button>
+                    <button class="btn btn-outline" onclick="configurarIntegracaoEmail()">⚙️ Integrar Email</button>
+                </div>
+            </div>
+
+            <div class="tabs" style="margin-bottom:20px;">
+                <button class="tab-btn active" onclick="mudarTabEmail('campanhas')">Campanhas</button>
+                <button class="tab-btn" onclick="mudarTabEmail('templates')">Templates</button>
+                <button class="tab-btn" onclick="mudarTabEmail('enviados')">Enviados</button>
+                <button class="tab-btn" onclick="mudarTabEmail('integracoes')">Integrações</button>
+            </div>
+
+            <div id="tab-campanhas" class="tab-content active">
+                <div class="cards-grid" id="listaCampanhas">
+                    <div class="empty-state"><span class="emoji-big">📧</span><p>Nenhuma campanha criada</p></div>
+                </div>
+            </div>
+
+            <div id="tab-templates" class="tab-content">
+                <div class="cards-grid" id="listaTemplates">
+                    <div class="empty-state"><span class="emoji-big">📄</span><p>Nenhum template salvo</p></div>
+                </div>
+            </div>
+
+            <div id="tab-enviados" class="tab-content">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Campanha</th>
+                                <th>Destinatários</th>
+                                <th>Status</th>
+                                <th>Taxa Abertura</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaEnviados">
+                            <tr><td colspan="5"><div class="empty-state compact"><span class="emoji-big">📭</span><p class="text-sm">Nenhum envio registrado</p></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-integracoes" class="tab-content">
+                <div class="card" style="padding:24px;">
+                    <h4 style="margin-bottom:16px;">🔗 Integrar com Provedor de Email</h4>
+                    <p style="color:var(--text-secondary);margin-bottom:20px;">Conecte sua conta do Gmail ou Outlook para enviar emails em massa diretamente do CRM.</p>
+                    
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">
+                        <div class="integration-card" onclick="conectarGmail()" style="border:1px solid var(--border-color);border-radius:8px;padding:20px;cursor:pointer;text-align:center;">
+                            <div style="font-size:32px;margin-bottom:12px;">📧</div>
+                            <h5 style="margin-bottom:8px;">Gmail / Google Workspace</h5>
+                            <p style="font-size:13px;color:var(--text-secondary);">Envie até 500 emails/dia</p>
+                            <span class="status-badge" id="status-gmail" style="margin-top:12px;display:inline-block;">Não conectado</span>
+                        </div>
+                        
+                        <div class="integration-card" onclick="conectarOutlook()" style="border:1px solid var(--border-color);border-radius:8px;padding:20px;cursor:pointer;text-align:center;">
+                            <div style="font-size:32px;margin-bottom:12px;">📬</div>
+                            <h5 style="margin-bottom:8px;">Outlook / Office 365</h5>
+                            <p style="font-size:13px;color:var(--text-secondary);">Envie até 300 emails/dia</p>
+                            <span class="status-badge" id="status-outlook" style="margin-top:12px;display:inline-block;">Não conectado</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:24px;padding:16px;background:rgba(59,130,246,0.1);border-radius:8px;border-left:3px solid #3b82f6;">
+                        <strong>⚠️ Importante:</strong> Para produção, configure as credenciais API no backend. Esta demonstração usa localStorage.
+                    </div>
                 </div>
             </div>
         </section>
@@ -2208,6 +2288,83 @@
             <div class="form-actions" style="margin-top:20px;">
                 <button type="button" class="btn btn-outline" onclick="fecharModal('pesquisaModal')">Fechar</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL CAMPANHA EMAIL -->
+    <div class="modal-overlay" id="campanhaModal">
+        <div class="modal" style="max-width:700px;">
+            <div class="modal-header">
+                <h2>📧 Nova Campanha de Email</h2>
+                <button class="modal-close" onclick="fecharModal('campanhaModal')">✕</button>
+            </div>
+            <form id="campanhaForm" onsubmit="salvarCampanha(event)">
+                <div class="form-group">
+                    <label for="campanhaNome">Nome da Campanha *</label>
+                    <input type="text" id="campanhaNome" required placeholder="Ex: Promoção Black Friday">
+                </div>
+                <div class="form-group">
+                    <label for="campanhaAssunto">Assunto do Email *</label>
+                    <input type="text" id="campanhaAssunto" required placeholder="Ex: Oferta especial para você!">
+                </div>
+                <div class="form-group">
+                    <label for="campanhaTemplate">Usar Template (opcional)</label>
+                    <select id="campanhaTemplate" onchange="carregarTemplate()">
+                        <option value="">Selecione um template...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="campanhaCorpo">Conteúdo do Email *</label>
+                    <textarea id="campanhaCorpo" rows="8" required placeholder="Digite o conteúdo do email ou use variáveis como {{nome}}, {{empresa}}..."></textarea>
+                    <small class="text-muted">Variáveis disponíveis: {{nome}}, {{empresa}}, {{email}}, {{telefone}}</small>
+                </div>
+                <div class="form-group">
+                    <label>Destinatários *</label>
+                    <div style="display:flex;gap:10px;margin-bottom:10px;">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="selecionarTodosLeads()">Todos os Leads</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="selecionarPorEtapa()">Por Etapa</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="limparDestinatarios()">Limpar</button>
+                    </div>
+                    <div id="destinatariosLista" style="border:1px solid var(--border-color);border-radius:6px;padding:10px;max-height:150px;overflow-y:auto;">
+                        <p class="text-muted text-sm">Nenhum destinatário selecionado</p>
+                    </div>
+                    <input type="hidden" id="campanhaDestinatarios" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="fecharModal('campanhaModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Salvar Campanha</button>
+                    <button type="button" class="btn btn-success" onclick="enviarCampanha()">🚀 Enviar Agora</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TEMPLATE EMAIL -->
+    <div class="modal-overlay" id="templateModal">
+        <div class="modal" style="max-width:700px;">
+            <div class="modal-header">
+                <h2>📄 Novo Template de Email</h2>
+                <button class="modal-close" onclick="fecharModal('templateModal')">✕</button>
+            </div>
+            <form id="templateForm" onsubmit="salvarTemplate(event)">
+                <div class="form-group">
+                    <label for="templateNome">Nome do Template *</label>
+                    <input type="text" id="templateNome" required placeholder="Ex: Follow-up inicial">
+                </div>
+                <div class="form-group">
+                    <label for="templateAssunto">Assunto Padrão *</label>
+                    <input type="text" id="templateAssunto" required placeholder="Ex: Como podemos ajudar?">
+                </div>
+                <div class="form-group">
+                    <label for="templateCorpo">Conteúdo do Template *</label>
+                    <textarea id="templateCorpo" rows="10" required placeholder="Use variáveis como {{nome}}, {{empresa}} para personalização automática..."></textarea>
+                    <small class="text-muted">Variáveis disponíveis: {{nome}}, {{empresa}}, {{email}}, {{telefone}}</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="fecharModal('templateModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Salvar Template</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -4403,6 +4560,352 @@
             reader.readAsText(file);
             event.target.value = '';
         }
+
+        // ============================================
+        // FUNÇÕES DE EMAIL MARKETING
+        // ============================================
+        
+        let campanhas = JSON.parse(localStorage.getItem('ploomes_campanhas')) || [];
+        let templates = JSON.parse(localStorage.getItem('ploomes_templates')) || [];
+        let enviosEmail = JSON.parse(localStorage.getItem('ploomes_envios')) || [];
+        let integracoesEmail = JSON.parse(localStorage.getItem('ploomes_integracoes')) || { gmail: false, outlook: false };
+        let destinatariosSelecionados = [];
+
+        function salvarDadosEmail() {
+            localStorage.setItem('ploomes_campanhas', JSON.stringify(campanhas));
+            localStorage.setItem('ploomes_templates', JSON.stringify(templates));
+            localStorage.setItem('ploomes_envios', JSON.stringify(enviosEmail));
+            localStorage.setItem('ploomes_integracoes', JSON.stringify(integracoesEmail));
+        }
+
+        function mudarTabEmail(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            if (tab === 'campanhas') renderizarCampanhas();
+            if (tab === 'templates') renderizarTemplates();
+            if (tab === 'enviados') renderizarEnviados();
+            if (tab === 'integracoes') renderizarIntegracoes();
+        }
+
+        function abrirModalCampanha() {
+            document.getElementById('campanhaForm').reset();
+            destinatariosSelecionados = [];
+            atualizarListaDestinatarios();
+            carregarTemplatesSelect();
+            document.getElementById('campanhaModal').style.display = 'flex';
+        }
+
+        function abrirModalTemplate() {
+            document.getElementById('templateForm').reset();
+            document.getElementById('templateModal').style.display = 'flex';
+        }
+
+        function carregarTemplatesSelect() {
+            const select = document.getElementById('campanhaTemplate');
+            select.innerHTML = '<option value="">Selecione um template...</option>';
+            templates.forEach((t, i) => {
+                select.innerHTML += `<option value="${i}">${t.nome}</option>`;
+            });
+        }
+
+        function carregarTemplate() {
+            const index = document.getElementById('campanhaTemplate').value;
+            if (index && templates[index]) {
+                const t = templates[index];
+                document.getElementById('campanhaAssunto').value = t.assunto;
+                document.getElementById('campanhaCorpo').value = t.corpo;
+            }
+        }
+
+        function selecionarTodosLeads() {
+            destinatariosSelecionados = leads.map(l => ({ id: l.id, nome: l.empresa, email: l.email }));
+            atualizarListaDestinatarios();
+        }
+
+        function selecionarPorEtapa() {
+            const etapa = prompt('Digite a etapa (leads, qualificacao, oportunidades, orcamento, pedido):');
+            if (etapa && ETAPAS.find(e => e.id === etapa)) {
+                destinatariosSelecionados = leads.filter(l => l.etapa === etapa).map(l => ({ id: l.id, nome: l.empresa, email: l.email }));
+                atualizarListaDestinatarios();
+            } else {
+                showToast('❌ Etapa inválida!', 'error');
+            }
+        }
+
+        function limparDestinatarios() {
+            destinatariosSelecionados = [];
+            atualizarListaDestinatarios();
+        }
+
+        function atualizarListaDestinatarios() {
+            const div = document.getElementById('destinatariosLista');
+            if (destinatariosSelecionados.length === 0) {
+                div.innerHTML = '<p class="text-muted text-sm">Nenhum destinatário selecionado</p>';
+            } else {
+                div.innerHTML = destinatariosSelecionados.map(d => 
+                    `<span style="display:inline-block;background:var(--bg-primary);padding:4px 8px;border-radius:4px;margin:2px;font-size:13px;">${d.nome}${d.email ? ' - ' + d.email : ''}</span>`
+                ).join('');
+            }
+            document.getElementById('campanhaDestinatarios').value = JSON.stringify(destinatariosSelecionados);
+        }
+
+        function salvarCampanha(e) {
+            e.preventDefault();
+            const campanha = {
+                id: Date.now(),
+                nome: document.getElementById('campanhaNome').value,
+                assunto: document.getElementById('campanhaAssunto').value,
+                corpo: document.getElementById('campanhaCorpo').value,
+                destinatarios: JSON.parse(document.getElementById('campanhaDestinatarios').value || '[]'),
+                dataCriacao: hoje(),
+                status: 'Rascunho'
+            };
+            campanhas.push(campanha);
+            salvarDadosEmail();
+            fecharModal('campanhaModal');
+            showToast('✅ Campanha salva com sucesso!');
+            renderizarCampanhas();
+        }
+
+        function enviarCampanha() {
+            const form = document.getElementById('campanhaForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const campanha = {
+                id: Date.now(),
+                nome: document.getElementById('campanhaNome').value,
+                assunto: document.getElementById('campanhaAssunto').value,
+                corpo: document.getElementById('campanhaCorpo').value,
+                destinatarios: JSON.parse(document.getElementById('campanhaDestinatarios').value || '[]'),
+                dataEnvio: hoje(),
+                status: 'Enviado'
+            };
+            
+            if (campanha.destinatarios.length === 0) {
+                showToast('❌ Selecione pelo menos um destinatário!', 'error');
+                return;
+            }
+
+            // Simulação de envio
+            const enviosSimulados = Math.floor(Math.random() * 50) + 10;
+            const aberturas = Math.floor(enviosSimulados * (Math.random() * 0.4 + 0.1));
+            
+            enviosEmail.push({
+                data: hoje(),
+                campanha: campanha.nome,
+                destinatarios: campanha.destinatarios.length,
+                enviados: enviosSimulados,
+                aberturas: aberturas,
+                taxaAbertura: ((aberturas / enviosSimulados) * 100).toFixed(1) + '%'
+            });
+            
+            campanhas.push(campanha);
+            salvarDadosEmail();
+            fecharModal('campanhaModal');
+            showToast(`🚀 Campanha enviada! ${enviosSimulados} emails disparados.`);
+            renderizarCampanhas();
+        }
+
+        function salvarTemplate(e) {
+            e.preventDefault();
+            const template = {
+                id: Date.now(),
+                nome: document.getElementById('templateNome').value,
+                assunto: document.getElementById('templateAssunto').value,
+                corpo: document.getElementById('templateCorpo').value,
+                dataCriacao: hoje()
+            };
+            templates.push(template);
+            salvarDadosEmail();
+            fecharModal('templateModal');
+            showToast('✅ Template salvo com sucesso!');
+            renderizarTemplates();
+        }
+
+        function renderizarCampanhas() {
+            const div = document.getElementById('listaCampanhas');
+            if (campanhas.length === 0) {
+                div.innerHTML = '<div class="empty-state"><span class="emoji-big">📧</span><p>Nenhuma campanha criada</p></div>';
+                return;
+            }
+            div.innerHTML = campanhas.map(c => `
+                <div class="card" style="padding:20px;">
+                    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+                        <h4 style="font-size:16px;font-weight:700;">${c.nome}</h4>
+                        <span class="status-badge ${c.status === 'Enviado' ? 'concluido' : 'pendente'}">${c.status}</span>
+                    </div>
+                    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:8px;">${c.assunto}</p>
+                    <div style="display:flex;gap:16px;font-size:13px;color:var(--text-muted);">
+                        <span>📅 ${c.dataCriacao || c.dataEnvio}</span>
+                        <span>👥 ${c.destinatarios ? c.destinatarios.length : 0} destinatários</span>
+                    </div>
+                    <div style="margin-top:16px;display:flex;gap:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="editarCampanha(${c.id})">✏️ Editar</button>
+                        ${c.status !== 'Enviado' ? `<button class="btn btn-success btn-sm" onclick="reenviarCampanha(${c.id})">🚀 Enviar</button>` : ''}
+                        <button class="btn btn-danger btn-sm" onclick="excluirCampanha(${c.id})">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderizarTemplates() {
+            const div = document.getElementById('listaTemplates');
+            if (templates.length === 0) {
+                div.innerHTML = '<div class="empty-state"><span class="emoji-big">📄</span><p>Nenhum template salvo</p></div>';
+                return;
+            }
+            div.innerHTML = templates.map(t => `
+                <div class="card" style="padding:20px;">
+                    <h4 style="font-size:16px;font-weight:700;margin-bottom:8px;">${t.nome}</h4>
+                    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:8px;">${t.assunto}</p>
+                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">${t.corpo.substring(0, 100)}${t.corpo.length > 100 ? '...' : ''}</p>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="editarTemplate(${t.id})">✏️ Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="excluirTemplate(${t.id})">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderizarEnviados() {
+            const tbody = document.getElementById('tabelaEnviados');
+            if (enviosEmail.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state compact"><span class="emoji-big">📭</span><p class="text-sm">Nenhum envio registrado</p></div></td></tr>';
+                return;
+            }
+            tbody.innerHTML = enviosEmail.map(e => `
+                <tr>
+                    <td>${e.data}</td>
+                    <td>${e.campanha}</td>
+                    <td>${e.destinatarios}</td>
+                    <td><span class="status-badge concluido">Enviado</span></td>
+                    <td><strong>${e.taxaAbertura}</strong> (${e.aberturas} aberturas)</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderizarIntegracoes() {
+            const statusGmail = document.getElementById('status-gmail');
+            const statusOutlook = document.getElementById('status-outlook');
+            
+            if (statusGmail) {
+                statusGmail.textContent = integracoesEmail.gmail ? '✅ Conectado' : 'Não conectado';
+                statusGmail.style.background = integracoesEmail.gmail ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
+                statusGmail.style.color = integracoesEmail.gmail ? '#22c55e' : '#ef4444';
+            }
+            
+            if (statusOutlook) {
+                statusOutlook.textContent = integracoesEmail.outlook ? '✅ Conectado' : 'Não conectado';
+                statusOutlook.style.background = integracoesEmail.outlook ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
+                statusOutlook.style.color = integracoesEmail.outlook ? '#22c55e' : '#ef4444';
+            }
+        }
+
+        function configurarIntegracaoEmail() {
+            mudarTabEmail('integracoes');
+            document.querySelector('[data-section="email-marketing"]').click();
+        }
+
+        function conectarGmail() {
+            // Em produção: implementar OAuth2 do Google
+            if (!integracoesEmail.gmail) {
+                if (confirm('🔐 Para conectar ao Gmail, você precisaria configurar as credenciais da API no backend.\n\nDeseja simular a conexão para demonstração?')) {
+                    integracoesEmail.gmail = true;
+                    salvarDadosEmail();
+                    renderizarIntegracoes();
+                    showToast('✅ Gmail conectado com sucesso!');
+                }
+            } else {
+                if (confirm('Deseja desconectar o Gmail?')) {
+                    integracoesEmail.gmail = false;
+                    salvarDadosEmail();
+                    renderizarIntegracoes();
+                    showToast('🔌 Gmail desconectado.');
+                }
+            }
+        }
+
+        function conectarOutlook() {
+            // Em produção: implementar OAuth2 da Microsoft
+            if (!integracoesEmail.outlook) {
+                if (confirm('🔐 Para conectar ao Outlook, você precisaria configurar as credenciais da API no backend.\n\nDeseja simular a conexão para demonstração?')) {
+                    integracoesEmail.outlook = true;
+                    salvarDadosEmail();
+                    renderizarIntegracoes();
+                    showToast('✅ Outlook conectado com sucesso!');
+                }
+            } else {
+                if (confirm('Deseja desconectar o Outlook?')) {
+                    integracoesEmail.outlook = false;
+                    salvarDadosEmail();
+                    renderizarIntegracoes();
+                    showToast('🔌 Outlook desconectado.');
+                }
+            }
+        }
+
+        function editarCampanha(id) {
+            const c = campanhas.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('campanhaNome').value = c.nome;
+            document.getElementById('campanhaAssunto').value = c.assunto;
+            document.getElementById('campanhaCorpo').value = c.corpo;
+            destinatariosSelecionados = c.destinatarios || [];
+            atualizarListaDestinatarios();
+            document.getElementById('campanhaModal').style.display = 'flex';
+        }
+
+        function reenviarCampanha(id) {
+            editarCampanha(id);
+            showToast('✏️ Edite a campanha e clique em "Enviar Agora"');
+        }
+
+        function excluirCampanha(id) {
+            if (confirm('Tem certeza que deseja excluir esta campanha?')) {
+                campanhas = campanhas.filter(c => c.id !== id);
+                salvarDadosEmail();
+                renderizarCampanhas();
+                showToast('🗑️ Campanha excluída.');
+            }
+        }
+
+        function editarTemplate(id) {
+            const t = templates.find(x => x.id === id);
+            if (!t) return;
+            document.getElementById('templateNome').value = t.nome;
+            document.getElementById('templateAssunto').value = t.assunto;
+            document.getElementById('templateCorpo').value = t.corpo;
+            document.getElementById('templateModal').style.display = 'flex';
+        }
+
+        function excluirTemplate(id) {
+            if (confirm('Tem certeza que deseja excluir este template?')) {
+                templates = templates.filter(t => t.id !== id);
+                salvarDadosEmail();
+                renderizarTemplates();
+                showToast('🗑️ Template excluído.');
+            }
+        }
+
+        // Adicionar navegação para Email Marketing
+        document.querySelectorAll('[data-section]').forEach(link => {
+            link.addEventListener('click', function() {
+                const section = this.dataset.section;
+                if (section === 'email-marketing') {
+                    renderizarCampanhas();
+                    renderizarTemplates();
+                    renderizarEnviados();
+                    renderizarIntegracoes();
+                }
+            });
+        });
     </script>
 
 </body>
