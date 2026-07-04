@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ploomes CRM - Offline</title>
+    <title>Ploomes CRM - Versão Melhorada</title>
+    <link rel="stylesheet" href="css/styles.css">
     <style>
+        /* Estilos específicos do HTML que não estão no CSS modular */
         /* ============================================
            RESET E VARIÁVEIS
            ============================================ */
@@ -1594,8 +1596,19 @@
             border-left: 4px solid var(--stage-qualificacao);
         }
     </style>
+    <meta name="description" content="CRM Offline para gestão de leads e vendas">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Container de Notificações -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Overlay de Loading -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
 
     <aside class="sidebar" id="sidebar">
         <div class="logo">
@@ -2203,9 +2216,11 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Scripts da Aplicação -->
+    <script src="js/app.js"></script>
     <script>
         // ============================================
-        // CONFIGURAÇÃO
+        // CONFIGURAÇÃO LEGACY (para compatibilidade)
         // ============================================
         const ETAPAS = [
             { id: 'leads', label: '🟣 Leads', cor: '#8b5cf6' },
