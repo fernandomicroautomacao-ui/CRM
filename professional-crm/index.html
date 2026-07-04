@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ploomes CRM Pro - Email Marketing & Automação</title>
+    <title>Ploomes CRM Pro - Email Marketing & Sales</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,14 +14,17 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Ploomes CRM Pro</span>
+                    <i class="fas fa-bolt"></i>
+                    <span>Ploomes CRM</span>
                 </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <a href="#" class="nav-item active" data-section="dashboard">
-                    <i class="fas fa-home"></i>
+                    <i class="fas fa-chart-line"></i>
                     <span>Dashboard</span>
                 </a>
                 <a href="#" class="nav-item" data-section="pipeline">
@@ -36,27 +39,23 @@
                     <i class="fas fa-tasks"></i>
                     <span>Tarefas</span>
                 </a>
-                <a href="#" class="nav-item" data-section="email-marketing">
-                    <i class="fas fa-envelope-open-text"></i>
+                <a href="#" class="nav-item" data-section="email">
+                    <i class="fas fa-envelope"></i>
                     <span>Email Marketing</span>
-                    <span class="badge new">Novo</span>
-                </a>
-                <a href="#" class="nav-item" data-section="reports">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Relatórios</span>
-                </a>
-                <a href="#" class="nav-item" data-section="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Configurações</span>
+                    <span class="badge" id="emailBadge">0</span>
                 </a>
             </nav>
-            
+
             <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                    <span>Modo Escuro</span>
+                </button>
                 <div class="user-profile">
                     <div class="avatar">US</div>
                     <div class="user-info">
-                        <div class="user-name">Usuário Demo</div>
-                        <div class="user-email">usuario@empresa.com</div>
+                        <div class="user-name">Usuário</div>
+                        <div class="user-role">Admin</div>
                     </div>
                 </div>
             </div>
@@ -65,26 +64,23 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
-            <header class="top-header">
+            <header class="header">
                 <div class="header-left">
-                    <button class="menu-toggle" id="menuToggle">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
                         <i class="fas fa-bars"></i>
                     </button>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="header-right">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Buscar leads, tarefas..." id="globalSearch">
+                        <input type="text" placeholder="Buscar..." id="globalSearch">
                     </div>
-                </div>
-                
-                <div class="header-right">
-                    <button class="btn-icon" id="themeToggle" title="Alternar tema">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button class="btn-icon" id="notificationBtn" title="Notificações">
+                    <button class="notification-btn">
                         <i class="fas fa-bell"></i>
                         <span class="notification-dot"></span>
                     </button>
-                    <button class="btn-primary" id="newLeadBtn">
+                    <button class="btn btn-primary" id="newLeadBtn">
                         <i class="fas fa-plus"></i>
                         <span>Novo Lead</span>
                     </button>
@@ -92,461 +88,240 @@
             </header>
 
             <!-- Dashboard Section -->
-            <section class="content-section active" id="dashboard">
-                <div class="section-header">
-                    <h1>Dashboard</h1>
-                    <div class="date-filter">
-                        <select id="dashboardPeriod">
-                            <option value="today">Hoje</option>
-                            <option value="week" selected>Esta Semana</option>
-                            <option value="month">Este Mês</option>
-                            <option value="year">Este Ano</option>
-                        </select>
-                    </div>
-                </div>
-                
+            <section class="content-section active" id="dashboardSection">
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon blue">
                             <i class="fas fa-users"></i>
                         </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="totalLeads">0</div>
-                            <div class="stat-label">Total de Leads</div>
+                        <div class="stat-info">
+                            <h3 id="totalLeads">0</h3>
+                            <p>Total de Leads</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon green">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="totalRevenue">R$ 0</div>
-                            <div class="stat-label">Receita Total</div>
+                        <div class="stat-info">
+                            <h3 id="totalValue">R$ 0</h3>
+                            <p>Valor Total</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon orange">
-                            <i class="fas fa-tasks"></i>
+                            <i class="fas fa-briefcase"></i>
                         </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="pendingTasks">0</div>
-                            <div class="stat-label">Tarefas Pendentes</div>
+                        <div class="stat-info">
+                            <h3 id="dealsWon">0</h3>
+                            <p>Negócios Fechados</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon purple">
-                            <i class="fas fa-envelope"></i>
+                            <i class="fas fa-envelope-open"></i>
                         </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="emailsSent">0</div>
-                            <div class="stat-label">Emails Enviados</div>
+                        <div class="stat-info">
+                            <h3 id="emailsSent">0</h3>
+                            <p>Emails Enviados</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="dashboard-grid">
-                    <div class="card chart-card">
+                    <div class="card funnel-card">
                         <div class="card-header">
                             <h3>Funil de Vendas</h3>
                         </div>
-                        <div class="card-body">
-                            <canvas id="funnelChart"></canvas>
+                        <div class="funnel-chart" id="funnelChart">
+                            <!-- Generated by JS -->
                         </div>
                     </div>
-                    
-                    <div class="card">
+                    <div class="card recent-activity">
                         <div class="card-header">
-                            <h3>Atividades Recentes</h3>
+                            <h3>Atividade Recente</h3>
                         </div>
-                        <div class="card-body">
-                            <div class="activity-list" id="recentActivities">
-                                <!-- Activities will be loaded here -->
-                            </div>
+                        <div class="activity-list" id="activityList">
+                            <!-- Generated by JS -->
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Pipeline Section -->
-            <section class="content-section" id="pipeline">
-                <div class="section-header">
-                    <h1>Pipeline de Vendas</h1>
-                    <button class="btn-primary" id="addDealBtn">
-                        <i class="fas fa-plus"></i>
-                        <span>Novo Negócio</span>
-                    </button>
-                </div>
-                
-                <div class="pipeline-container" id="pipelineBoard">
-                    <!-- Pipeline columns will be generated here -->
+            <section class="content-section" id="pipelineSection">
+                <div class="pipeline-container">
+                    <div class="pipeline-header">
+                        <div class="pipeline-actions">
+                            <button class="btn btn-outline" id="addStageBtn">
+                                <i class="fas fa-plus"></i> Nova Etapa
+                            </button>
+                        </div>
+                    </div>
+                    <div class="kanban-board" id="kanbanBoard">
+                        <!-- Generated by JS -->
+                    </div>
                 </div>
             </section>
 
             <!-- Leads Section -->
-            <section class="content-section" id="leads">
-                <div class="section-header">
-                    <h1>Gestão de Leads</h1>
-                    <div class="header-actions">
-                        <div class="filter-group">
-                            <select id="leadFilter">
-                                <option value="all">Todos os Leads</option>
-                                <option value="new">Novos</option>
-                                <option value="contacted">Contatados</option>
-                                <option value="qualified">Qualificados</option>
-                            </select>
-                        </div>
-                        <button class="btn-primary" id="addLeadBtn">
-                            <i class="fas fa-plus"></i>
-                            <span>Adicionar Lead</span>
+            <section class="content-section" id="leadsSection">
+                <div class="leads-header">
+                    <div class="filter-group">
+                        <select class="filter-select" id="stageFilter">
+                            <option value="">Todas as Etapas</option>
+                        </select>
+                        <select class="filter-select" id="sourceFilter">
+                            <option value="">Todas as Origens</option>
+                            <option value="website">Website</option>
+                            <option value="social">Redes Sociais</option>
+                            <option value="referral">Indicação</option>
+                            <option value="event">Evento</option>
+                        </select>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="view-btn" data-view="grid">
+                            <i class="fas fa-th"></i>
                         </button>
                     </div>
                 </div>
-                
-                <div class="table-container">
-                    <table class="data-table" id="leadsTable">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Empresa</th>
-                                <th>Email</th>
-                                <th>Telefone</th>
-                                <th>Status</th>
-                                <th>Valor</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leadsTableBody">
-                            <!-- Leads will be loaded here -->
-                        </tbody>
-                    </table>
+                <div class="leads-container" id="leadsContainer">
+                    <!-- Generated by JS -->
                 </div>
             </section>
 
             <!-- Tasks Section -->
-            <section class="content-section" id="tasks">
-                <div class="section-header">
-                    <h1>Gestão de Tarefas</h1>
-                    <button class="btn-primary" id="addTaskBtn">
-                        <i class="fas fa-plus"></i>
-                        <span>Nova Tarefa</span>
+            <section class="content-section" id="tasksSection">
+                <div class="tasks-header">
+                    <button class="btn btn-primary" id="newTaskBtn">
+                        <i class="fas fa-plus"></i> Nova Tarefa
                     </button>
                 </div>
-                
-                <div class="tasks-container" id="tasksBoard">
-                    <!-- Tasks will be loaded here -->
+                <div class="tasks-container" id="tasksContainer">
+                    <!-- Generated by JS -->
                 </div>
             </section>
 
             <!-- Email Marketing Section -->
-            <section class="content-section" id="email-marketing">
-                <div class="section-header">
-                    <h1>Email Marketing</h1>
-                    <div class="header-tabs">
-                        <button class="tab-btn active" data-tab="campaigns">
-                            <i class="fas fa-paper-plane"></i>
-                            Campanhas
+            <section class="content-section" id="emailSection">
+                <div class="email-container">
+                    <div class="email-tabs">
+                        <button class="email-tab active" data-tab="campaigns">
+                            <i class="fas fa-paper-plane"></i> Campanhas
                         </button>
-                        <button class="tab-btn" data-tab="templates">
-                            <i class="fas fa-file-alt"></i>
-                            Templates
+                        <button class="email-tab" data-tab="templates">
+                            <i class="fas fa-file-alt"></i> Templates
                         </button>
-                        <button class="tab-btn" data-tab="sent">
-                            <i class="fas fa-check-circle"></i>
-                            Enviados
+                        <button class="email-tab" data-tab="sent">
+                            <i class="fas fa-history"></i> Enviados
                         </button>
-                        <button class="tab-btn" data-tab="integrations">
-                            <i class="fas fa-plug"></i>
-                            Integrações
+                        <button class="email-tab" data-tab="integrations">
+                            <i class="fas fa-plug"></i> Integrações
                         </button>
                     </div>
-                </div>
 
-                <!-- Campaigns Tab -->
-                <div class="tab-content active" id="campaigns-tab">
-                    <div class="toolbar">
-                        <button class="btn-primary" id="newCampaignBtn">
-                            <i class="fas fa-plus"></i>
-                            Nova Campanha
-                        </button>
-                        <div class="search-filter">
-                            <input type="text" placeholder="Buscar campanhas..." id="campaignSearch">
-                            <select id="campaignStatusFilter">
-                                <option value="all">Todos os Status</option>
-                                <option value="draft">Rascunho</option>
-                                <option value="scheduled">Agendado</option>
-                                <option value="sent">Enviado</option>
-                            </select>
+                    <!-- Campaigns Tab -->
+                    <div class="email-tab-content active" id="campaignsTab">
+                        <div class="tab-header">
+                            <h2>Campanhas de Email</h2>
+                            <button class="btn btn-primary" id="newCampaignBtn">
+                                <i class="fas fa-plus"></i> Nova Campanha
+                            </button>
+                        </div>
+                        <div class="campaigns-grid" id="campaignsGrid">
+                            <!-- Generated by JS -->
                         </div>
                     </div>
-                    
-                    <div class="campaigns-grid" id="campaignsList">
-                        <!-- Campaigns will be loaded here -->
-                    </div>
-                </div>
 
-                <!-- Templates Tab -->
-                <div class="tab-content" id="templates-tab">
-                    <div class="toolbar">
-                        <button class="btn-primary" id="newTemplateBtn">
-                            <i class="fas fa-plus"></i>
-                            Novo Template
-                        </button>
-                    </div>
-                    
-                    <div class="templates-grid" id="templatesList">
-                        <!-- Templates will be loaded here -->
-                    </div>
-                </div>
-
-                <!-- Sent Emails Tab -->
-                <div class="tab-content" id="sent-tab">
-                    <div class="toolbar">
-                        <div class="search-filter">
-                            <input type="text" placeholder="Buscar emails enviados..." id="sentSearch">
-                            <select id="sentDateFilter">
-                                <option value="all">Todas as Datas</option>
-                                <option value="today">Hoje</option>
-                                <option value="week">Esta Semana</option>
-                                <option value="month">Este Mês</option>
-                            </select>
+                    <!-- Templates Tab -->
+                    <div class="email-tab-content" id="templatesTab">
+                        <div class="tab-header">
+                            <h2>Templates de Email</h2>
+                            <button class="btn btn-primary" id="newTemplateBtn">
+                                <i class="fas fa-plus"></i> Novo Template
+                            </button>
+                        </div>
+                        <div class="templates-grid" id="templatesGrid">
+                            <!-- Generated by JS -->
                         </div>
                     </div>
-                    
-                    <div class="table-container">
-                        <table class="data-table" id="sentEmailsTable">
-                            <thead>
-                                <tr>
-                                    <th>Data/Hora</th>
-                                    <th>Campanha</th>
-                                    <th>Destinatário</th>
-                                    <th>Assunto</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sentEmailsBody">
-                                <!-- Sent emails will be loaded here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <!-- Integrations Tab -->
-                <div class="tab-content" id="integrations-tab">
-                    <div class="integrations-container">
-                        <div class="integration-card gmail" id="gmailIntegration">
-                            <div class="integration-header">
-                                <div class="integration-logo">
+                    <!-- Sent Tab -->
+                    <div class="email-tab-content" id="sentTab">
+                        <div class="tab-header">
+                            <h2>Histórico de Envios</h2>
+                        </div>
+                        <div class="sent-list" id="sentList">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Integrations Tab -->
+                    <div class="email-tab-content" id="integrationsTab">
+                        <div class="tab-header">
+                            <h2>Integrações de Email</h2>
+                        </div>
+                        <div class="integrations-grid">
+                            <div class="integration-card" id="gmailCard">
+                                <div class="integration-icon gmail">
                                     <i class="fab fa-google"></i>
                                 </div>
                                 <div class="integration-info">
                                     <h3>Gmail / Google Workspace</h3>
-                                    <p>Conecte sua conta Gmail para enviar emails em massa com autenticação OAuth 2.0</p>
+                                    <p>Conecte sua conta Gmail para enviar campanhas diretamente.</p>
+                                    <div class="integration-status" id="gmailStatus">
+                                        <span class="status-badge disconnected">Desconectado</span>
+                                    </div>
+                                    <div class="integration-limits">
+                                        <small>Limite: 500 emails/dia</small>
+                                    </div>
                                 </div>
-                                <div class="integration-status">
-                                    <span class="status-badge disconnected">Desconectado</span>
-                                </div>
-                            </div>
-                            <div class="integration-details">
-                                <ul>
-                                    <li><i class="fas fa-check"></i> Limite: 500 emails/dia</li>
-                                    <li><i class="fas fa-check"></i> Autenticação segura OAuth 2.0</li>
-                                    <li><i class="fas fa-check"></i> Rastreamento de abertura e cliques</li>
-                                    <li><i class="fas fa-check"></i> Sincronização de contatos</li>
-                                </ul>
-                            </div>
-                            <div class="integration-actions">
-                                <button class="btn-connect" onclick="EmailApp.connectGmail()">
-                                    <i class="fab fa-google"></i>
+                                <button class="btn btn-connect" id="connectGmailBtn">
                                     Conectar com Gmail
                                 </button>
-                                <button class="btn-disconnect hidden" onclick="EmailApp.disconnectGmail()">
-                                    Desconectar
-                                </button>
                             </div>
-                        </div>
 
-                        <div class="integration-card outlook" id="outlookIntegration">
-                            <div class="integration-header">
-                                <div class="integration-logo">
+                            <div class="integration-card" id="outlookCard">
+                                <div class="integration-icon outlook">
                                     <i class="fab fa-microsoft"></i>
                                 </div>
                                 <div class="integration-info">
                                     <h3>Outlook / Microsoft 365</h3>
-                                    <p>Integre com Outlook para enviar campanhas profissionais com API Microsoft Graph</p>
+                                    <p>Integre com Outlook para usar o Microsoft Graph API.</p>
+                                    <div class="integration-status" id="outlookStatus">
+                                        <span class="status-badge disconnected">Desconectado</span>
+                                    </div>
+                                    <div class="integration-limits">
+                                        <small>Limite: 300 emails/dia</small>
+                                    </div>
                                 </div>
-                                <div class="integration-status">
-                                    <span class="status-badge disconnected">Desconectado</span>
-                                </div>
-                            </div>
-                            <div class="integration-details">
-                                <ul>
-                                    <li><i class="fas fa-check"></i> Limite: 300 emails/dia</li>
-                                    <li><i class="fas fa-check"></i> API Microsoft Graph</li>
-                                    <li><i class="fas fa-check"></i> Calendário integrado</li>
-                                    <li><i class="fas fa-check"></i> Contatos do Azure AD</li>
-                                </ul>
-                            </div>
-                            <div class="integration-actions">
-                                <button class="btn-connect" onclick="EmailApp.connectOutlook()">
-                                    <i class="fab fa-microsoft"></i>
+                                <button class="btn btn-connect" id="connectOutlookBtn">
                                     Conectar com Outlook
                                 </button>
-                                <button class="btn-disconnect hidden" onclick="EmailApp.disconnectOutlook()">
-                                    Desconectar
-                                </button>
                             </div>
                         </div>
-
-                        <div class="integration-guide">
-                            <h3><i class="fas fa-book"></i> Guia de Configuração</h3>
-                            <div class="guide-steps">
-                                <div class="step">
-                                    <div class="step-number">1</div>
-                                    <div class="step-content">
-                                        <h4>Escolha seu provedor</h4>
-                                        <p>Selecione Gmail ou Outlook dependendo da sua conta de email corporativa.</p>
-                                    </div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">2</div>
-                                    <div class="step-content">
-                                        <h4>Autorize o acesso</h4>
-                                        <p>Você será redirecionado para a página de login do provedor para autorizar o CRM.</p>
-                                    </div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">3</div>
-                                    <div class="step-content">
-                                        <h4>Comece a enviar</h4>
-                                        <p>Após conectar, crie campanhas e envie emails diretamente pelo CRM.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="api-info">
-                                <h4><i class="fas fa-code"></i> Informações Técnicas</h4>
-                                <div class="api-details">
-                                    <div class="api-item">
-                                        <strong>Gmail API:</strong>
-                                        <code>https://www.googleapis.com/gmail/v1/users/me/messages/send</code>
-                                    </div>
-                                    <div class="api-item">
-                                        <strong>Microsoft Graph API:</strong>
-                                        <code>https://graph.microsoft.com/v1.0/me/sendMail</code>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Reports Section -->
-            <section class="content-section" id="reports">
-                <div class="section-header">
-                    <h1>Relatórios e Analytics</h1>
-                </div>
-                
-                <div class="reports-grid">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Performance de Emails</h3>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="emailPerformanceChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Conversão por Canal</h3>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="conversionChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Settings Section -->
-            <section class="content-section" id="settings">
-                <div class="section-header">
-                    <h1>Configurações</h1>
-                </div>
-                
-                <div class="settings-container">
-                    <div class="settings-group">
-                        <h3>Preferências Gerais</h3>
-                        <div class="setting-item">
-                            <label>Tema</label>
-                            <select id="themeSelect">
-                                <option value="auto">Automático</option>
-                                <option value="light">Claro</option>
-                                <option value="dark">Escuro</option>
-                            </select>
-                        </div>
-                        <div class="setting-item">
-                            <label>Idioma</label>
-                            <select id="languageSelect">
-                                <option value="pt-BR">Português (Brasil)</option>
-                                <option value="en-US">English (US)</option>
-                                <option value="es">Español</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <h3>Notificações</h3>
-                        <div class="setting-item">
-                            <label>Emails de notificação</label>
-                            <input type="checkbox" id="emailNotifications" checked>
-                        </div>
-                        <div class="setting-item">
-                            <label>Notificações push</label>
-                            <input type="checkbox" id="pushNotifications" checked>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <h3>Dados</h3>
-                        <button class="btn-secondary" onclick="DataManager.exportData()">
-                            <i class="fas fa-download"></i>
-                            Exportar Dados
-                        </button>
-                        <button class="btn-secondary" onclick="document.getElementById('importFile').click()">
-                            <i class="fas fa-upload"></i>
-                            Importar Dados
-                        </button>
-                        <input type="file" id="importFile" accept=".json" style="display:none" onchange="DataManager.importData(this)">
-                        <button class="btn-danger" onclick="DataManager.clearAll()">
-                            <i class="fas fa-trash"></i>
-                            Limpar Todos os Dados
-                        </button>
                     </div>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Modal for New/Edit Lead -->
-    <div class="modal" id="leadModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
+    <!-- Modals -->
+    <!-- New Lead Modal -->
+    <div class="modal-overlay" id="leadModal">
+        <div class="modal modal-lg">
             <div class="modal-header">
-                <h2 id="leadModalTitle">Novo Lead</h2>
-                <button class="modal-close" onclick="Modal.close('leadModal')">&times;</button>
+                <h3>Novo Lead</h3>
+                <button class="modal-close">&times;</button>
             </div>
-            <form id="leadForm">
-                <input type="hidden" id="leadId">
-                <div class="form-grid">
+            <div class="modal-body">
+                <form id="leadForm" class="form-grid">
                     <div class="form-group">
                         <label for="leadName">Nome *</label>
                         <input type="text" id="leadName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="leadCompany">Empresa</label>
-                        <input type="text" id="leadCompany">
                     </div>
                     <div class="form-group">
                         <label for="leadEmail">Email *</label>
@@ -557,273 +332,231 @@
                         <input type="tel" id="leadPhone">
                     </div>
                     <div class="form-group">
-                        <label for="leadStatus">Status</label>
-                        <select id="leadStatus">
-                            <option value="new">Novo</option>
-                            <option value="contacted">Contatado</option>
-                            <option value="qualified">Qualificado</option>
-                            <option value="proposal">Proposta</option>
-                            <option value="negotiation">Negociação</option>
-                            <option value="closed">Fechado</option>
-                        </select>
+                        <label for="leadCompany">Empresa</label>
+                        <input type="text" id="leadCompany">
                     </div>
                     <div class="form-group">
                         <label for="leadValue">Valor (R$)</label>
                         <input type="number" id="leadValue" step="0.01">
                     </div>
+                    <div class="form-group">
+                        <label for="leadSource">Origem</label>
+                        <select id="leadSource">
+                            <option value="website">Website</option>
+                            <option value="social">Redes Sociais</option>
+                            <option value="referral">Indicação</option>
+                            <option value="event">Evento</option>
+                        </select>
+                    </div>
                     <div class="form-group full-width">
                         <label for="leadNotes">Observações</label>
                         <textarea id="leadNotes" rows="3"></textarea>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" onclick="Modal.close('leadModal')">Cancelar</button>
-                    <button type="submit" class="btn-primary">Salvar</button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('leadModal')">Cancelar</button>
+                <button class="btn btn-primary" id="saveLeadBtn">Salvar</button>
+            </div>
         </div>
     </div>
 
-    <!-- Modal for New/Edit Task -->
-    <div class="modal" id="taskModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
+    <!-- Campaign Wizard Modal -->
+    <div class="modal-overlay" id="campaignModal">
+        <div class="modal modal-xl">
             <div class="modal-header">
-                <h2 id="taskModalTitle">Nova Tarefa</h2>
-                <button class="modal-close" onclick="Modal.close('taskModal')">&times;</button>
+                <h3>Nova Campanha de Email</h3>
+                <button class="modal-close">&times;</button>
             </div>
-            <form id="taskForm">
-                <input type="hidden" id="taskId">
-                <div class="form-group">
-                    <label for="taskTitle">Título *</label>
-                    <input type="text" id="taskTitle" required>
+            <div class="modal-body">
+                <div class="wizard-steps">
+                    <div class="step active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Configurações</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Destinatários</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Conteúdo</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="step-label">Revisão</span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="taskDescription">Descrição</label>
-                    <textarea id="taskDescription" rows="3"></textarea>
+
+                <div class="wizard-content">
+                    <!-- Step 1: Configurations -->
+                    <div class="wizard-step active" id="step1">
+                        <div class="form-group">
+                            <label for="campaignName">Nome da Campanha *</label>
+                            <input type="text" id="campaignName" placeholder="Ex: Promoção de Verão">
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignSubject">Assunto do Email *</label>
+                            <input type="text" id="campaignSubject" placeholder="Ex: Oferta especial para você!">
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignFrom">Remetente</label>
+                            <select id="campaignFrom">
+                                <option value="">Selecione uma integração</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Recipients -->
+                    <div class="wizard-step" id="step2">
+                        <div class="recipient-selector">
+                            <div class="recipient-filters">
+                                <input type="text" id="recipientSearch" placeholder="Buscar leads...">
+                                <select id="recipientStageFilter">
+                                    <option value="">Todas as etapas</option>
+                                </select>
+                            </div>
+                            <div class="recipient-list" id="recipientList">
+                                <!-- Generated by JS -->
+                            </div>
+                            <div class="selected-count">
+                                <span id="selectedCount">0</span> destinatários selecionados
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Content -->
+                    <div class="wizard-step" id="step3">
+                        <div class="template-selector">
+                            <label>Usar Template:</label>
+                            <select id="templateSelector">
+                                <option value="">Selecionar template...</option>
+                            </select>
+                        </div>
+                        <div class="email-editor">
+                            <div class="editor-toolbar">
+                                <button class="toolbar-btn" title="Negrito"><i class="fas fa-bold"></i></button>
+                                <button class="toolbar-btn" title="Itálico"><i class="fas fa-italic"></i></button>
+                                <button class="toolbar-btn" title="Link"><i class="fas fa-link"></i></button>
+                                <div class="toolbar-divider"></div>
+                                <button class="toolbar-btn" title="Variável" id="insertVariableBtn">
+                                    <i class="fas fa-variable"></i> Inserir Variável
+                                </button>
+                            </div>
+                            <textarea id="emailContent" class="email-content-editor" placeholder="Digite o conteúdo do email..."></textarea>
+                            <div class="variable-help">
+                                <small>Variáveis disponíveis: {{nome}}, {{empresa}}, {{email}}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Review -->
+                    <div class="wizard-step" id="step4">
+                        <div class="campaign-review">
+                            <div class="review-item">
+                                <strong>Campanha:</strong>
+                                <span id="reviewName"></span>
+                            </div>
+                            <div class="review-item">
+                                <strong>Assunto:</strong>
+                                <span id="reviewSubject"></span>
+                            </div>
+                            <div class="review-item">
+                                <strong>Destinatários:</strong>
+                                <span id="reviewRecipients"></span>
+                            </div>
+                            <div class="review-item">
+                                <strong>Remetente:</strong>
+                                <span id="reviewFrom"></span>
+                            </div>
+                            <div class="review-preview">
+                                <strong>Prévia do Email:</strong>
+                                <div class="email-preview" id="emailPreview"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-row">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="prevStepBtn" disabled>Anterior</button>
+                <button class="btn btn-primary" id="nextStepBtn">Próximo</button>
+                <button class="btn btn-success" id="sendCampaignBtn" style="display: none;">Enviar Campanha</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Modal -->
+    <div class="modal-overlay" id="templateModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 id="templateModalTitle">Novo Template</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="templateForm">
+                    <div class="form-group">
+                        <label for="templateName">Nome do Template *</label>
+                        <input type="text" id="templateName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="templateSubject">Assunto Padrão</label>
+                        <input type="text" id="templateSubject">
+                    </div>
+                    <div class="form-group">
+                        <label for="templateContent">Conteúdo *</label>
+                        <textarea id="templateContent" rows="10" required></textarea>
+                    </div>
+                    <div class="variable-help">
+                        <small>Variáveis disponíveis: {{nome}}, {{empresa}}, {{email}}</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('templateModal')">Cancelar</button>
+                <button class="btn btn-primary" id="saveTemplateBtn">Salvar Template</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="taskModalTitle">Nova Tarefa</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Título *</label>
+                        <input type="text" id="taskTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Descrição</label>
+                        <textarea id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDueDate">Data de Vencimento</label>
+                        <input type="date" id="taskDueDate">
+                    </div>
                     <div class="form-group">
                         <label for="taskPriority">Prioridade</label>
                         <select id="taskPriority">
                             <option value="low">Baixa</option>
                             <option value="medium" selected>Média</option>
                             <option value="high">Alta</option>
-                            <option value="urgent">Urgente</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="taskDueDate">Data de Vencimento</label>
-                        <input type="date" id="taskDueDate">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="taskAssignee">Atribuir a</label>
-                    <select id="taskAssignee">
-                        <option value="">Selecione...</option>
-                        <option value="me">Eu</option>
-                        <option value="team">Equipe</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" onclick="Modal.close('taskModal')">Cancelar</button>
-                    <button type="submit" class="btn-primary">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal for Campaign Creator -->
-    <div class="modal modal-large" id="campaignModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="campaignModalTitle">Nova Campanha de Email</h2>
-                <button class="modal-close" onclick="Modal.close('campaignModal')">&times;</button>
+                </form>
             </div>
-            <form id="campaignForm">
-                <input type="hidden" id="campaignId">
-                
-                <div class="wizard-steps">
-                    <div class="wizard-step active" data-step="1">
-                        <div class="step-indicator">
-                            <span class="step-number">1</span>
-                            <span class="step-title">Informações Básicas</span>
-                        </div>
-                        <div class="step-content">
-                            <div class="form-group">
-                                <label for="campaignName">Nome da Campanha *</label>
-                                <input type="text" id="campaignName" placeholder="Ex: Promoção Black Friday" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="campaignSubject">Assunto do Email *</label>
-                                <input type="text" id="campaignSubject" placeholder="Ex: 🎉 Oferta Especial para Você!" required>
-                                <small>Dica: Use emojis e personalize para aumentar o open rate</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="campaignFromName">Nome do Remetente</label>
-                                <input type="text" id="campaignFromName" placeholder="Ex: Sua Empresa">
-                            </div>
-                            <div class="form-group">
-                                <label for="campaignFromEmail">Email do Remetente</label>
-                                <input type="email" id="campaignFromEmail" placeholder="Ex: contato@suaempresa.com">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="wizard-step" data-step="2">
-                        <div class="step-indicator">
-                            <span class="step-number">2</span>
-                            <span class="step-title">Conteúdo do Email</span>
-                        </div>
-                        <div class="step-content">
-                            <div class="template-selector">
-                                <label>Usar Template</label>
-                                <select id="campaignTemplate">
-                                    <option value="">Selecionar template...</option>
-                                </select>
-                                <button type="button" class="btn-link" onclick="EmailApp.previewTemplate()">Visualizar</button>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="campaignContent">Corpo do Email *</label>
-                                <div class="rich-text-toolbar">
-                                    <button type="button" onclick="document.execCommand('bold')"><i class="fas fa-bold"></i></button>
-                                    <button type="button" onclick="document.execCommand('italic')"><i class="fas fa-italic"></i></button>
-                                    <button type="button" onclick="document.execCommand('underline')"><i class="fas fa-underline"></i></button>
-                                    <button type="button" onclick="document.execCommand('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
-                                    <button type="button" onclick="EmailApp.insertVariable()"><i class="fas fa-variable"></i> Variável</button>
-                                </div>
-                                <div id="campaignContentEditor" class="rich-text-editor" contenteditable="true"></div>
-                                <input type="hidden" id="campaignContent">
-                                <small>Variáveis disponíveis: {{nome}}, {{empresa}}, {{email}}</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="wizard-step" data-step="3">
-                        <div class="step-indicator">
-                            <span class="step-number">3</span>
-                            <span class="step-title">Destinatários</span>
-                        </div>
-                        <div class="step-content">
-                            <div class="recipient-selector">
-                                <label>Selecionar Destinatários</label>
-                                <div class="recipient-options">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="selectAllLeads">
-                                        Todos os Leads (<span id="totalLeadsCount">0</span>)
-                                    </label>
-                                </div>
-                                <div class="leads-list" id="campaignLeadsList">
-                                    <!-- Leads will be loaded here -->
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Lista de Emails (opcional)</label>
-                                <textarea id="campaignCustomEmails" rows="3" placeholder="Digite emails separados por vírgula..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="wizard-step" data-step="4">
-                        <div class="step-indicator">
-                            <span class="step-number">4</span>
-                            <span class="step-title">Agendamento</span>
-                        </div>
-                        <div class="step-content">
-                            <div class="form-group">
-                                <label>Tipo de Envio</label>
-                                <div class="radio-group">
-                                    <label class="radio-label">
-                                        <input type="radio" name="sendType" value="now" checked>
-                                        Enviar Agora
-                                    </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="sendType" value="scheduled">
-                                        Agendar
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="form-group hidden" id="scheduledDateGroup">
-                                <label for="campaignScheduleDate">Data e Hora</label>
-                                <input type="datetime-local" id="campaignScheduleDate">
-                            </div>
-                            <div class="form-group">
-                                <label>Provedor de Email</label>
-                                <select id="campaignProvider">
-                                    <option value="gmail">Gmail</option>
-                                    <option value="outlook">Outlook</option>
-                                </select>
-                                <small id="providerStatus">Status: <span class="status-dot disconnected"></span> Não conectado</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="modal-footer wizard-footer">
-                    <button type="button" class="btn-secondary" id="prevStep" disabled>
-                        <i class="fas fa-arrow-left"></i> Anterior
-                    </button>
-                    <button type="button" class="btn-primary" id="nextStep">
-                        Próximo <i class="fas fa-arrow-right"></i>
-                    </button>
-                    <button type="submit" class="btn-success hidden" id="submitCampaign">
-                        <i class="fas fa-paper-plane"></i> Enviar Campanha
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal for Template Editor -->
-    <div class="modal modal-large" id="templateModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="templateModalTitle">Editar Template</h2>
-                <button class="modal-close" onclick="Modal.close('templateModal')">&times;</button>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('taskModal')">Cancelar</button>
+                <button class="btn btn-primary" id="saveTaskBtn">Salvar</button>
             </div>
-            <form id="templateForm">
-                <input type="hidden" id="templateId">
-                <div class="form-group">
-                    <label for="templateName">Nome do Template *</label>
-                    <input type="text" id="templateName" required>
-                </div>
-                <div class="form-group">
-                    <label for="templateSubject">Assunto Padrão</label>
-                    <input type="text" id="templateSubject">
-                </div>
-                <div class="form-group">
-                    <label for="templateCategory">Categoria</label>
-                    <select id="templateCategory">
-                        <option value="welcome">Boas-vindas</option>
-                        <option value="promotion">Promoção</option>
-                        <option value="followup">Follow-up</option>
-                        <option value="newsletter">Newsletter</option>
-                        <option value="other">Outro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Corpo do Template</label>
-                    <div class="rich-text-toolbar">
-                        <button type="button" onclick="document.execCommand('bold')"><i class="fas fa-bold"></i></button>
-                        <button type="button" onclick="document.execCommand('italic')"><i class="fas fa-italic"></i></button>
-                        <button type="button" onclick="document.execCommand('underline')"><i class="fas fa-underline"></i></button>
-                        <button type="button" onclick="EmailApp.insertTemplateVariable()"><i class="fas fa-variable"></i> Variável</button>
-                    </div>
-                    <div id="templateContentEditor" class="rich-text-editor" contenteditable="true"></div>
-                    <input type="hidden" id="templateContent">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" onclick="Modal.close('templateModal')">Cancelar</button>
-                    <button type="submit" class="btn-primary">Salvar Template</button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <!-- Toast Notifications Container -->
+    <!-- Toast Notifications -->
     <div class="toast-container" id="toastContainer"></div>
 
     <script src="js/app.js"></script>
