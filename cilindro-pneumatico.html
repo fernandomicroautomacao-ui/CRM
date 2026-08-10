@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desenho de Cilindros Pneumáticos - Norma ISO 6431</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 0;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 30px;
+            border-right: 2px solid #e9ecef;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .control-group select,
+        .control-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .control-group select:focus,
+        .control-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .canvas-container {
+            padding: 30px;
+            background: #ffffff;
+            position: relative;
+        }
+
+        #cylinderCanvas {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: #fafafa;
+            width: 100%;
+            height: 500px;
+        }
+
+        .info-panel {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .info-panel h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .dimension-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #1976d2;
+        }
+
+        .dimension-item .label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .dimension-item .value {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .norm-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 6px;
+        }
+
+        .norm-info h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .norm-info p {
+            color: #856404;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                border-right: none;
+                border-bottom: 2px solid #e9ecef;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 Desenho de Cilindros Pneumáticos</h1>
+            <p>Conforme Norma ISO 6431 / VDMA 24562</p>
+        </header>
+
+        <div class="main-content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="boreSize">Diâmetro do Êmbolo (mm)</label>
+                    <select id="boreSize">
+                        <option value="32">32 mm</option>
+                        <option value="40">40 mm</option>
+                        <option value="50">50 mm</option>
+                        <option value="63" selected>63 mm</option>
+                        <option value="80">80 mm</option>
+                        <option value="100">100 mm</option>
+                        <option value="125">125 mm</option>
+                        <option value="160">160 mm</option>
+                        <option value="200">200 mm</option>
+                        <option value="250">250 mm</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="strokeLength">Curso (mm)</label>
+                    <input type="number" id="strokeLength" value="300" min="50" max="2000" step="10">
+                </div>
+
+                <div class="control-group">
+                    <label for="mountingType">Tipo de Montagem</label>
+                    <select id="mountingType">
+                        <option value="foot">Pés (Foot Mounting)</option>
+                        <option value="flange_front">Flange Frontal</option>
+                        <option value="flange_rear">Flange Traseiro</option>
+                        <option value="clevis">Olhal Articulado</option>
+                        <option value="trunnion">Mancais Laterais</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="rodDiameter">Diâmetro da Haste (mm)</label>
+                    <select id="rodDiameter">
+                        <option value="12">12 mm</option>
+                        <option value="16">16 mm</option>
+                        <option value="20">20 mm</option>
+                        <option value="25">25 mm</option>
+                        <option value="28" selected>28 mm</option>
+                        <option value="36">36 mm</option>
+                        <option value="45">45 mm</option>
+                    </select>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showDimensions" checked>
+                    <label for="showDimensions">Mostrar Cotas</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showPorts" checked>
+                    <label for="showPorts">Mostrar Portas de Ar</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showMagnetic">
+                    <label for="showMagnetic">Êmbolo Magnético</label>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="drawCylinder()">Atualizar Desenho</button>
+                    <button class="btn btn-secondary" onclick="exportImage()">Exportar Imagem</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="cylinderCanvas"></canvas>
+
+                <div class="info-panel">
+                    <h3>📊 Dimensões do Cilindro</h3>
+                    <div class="dimension-grid" id="dimensionGrid">
+                        <!-- Preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <div class="norm-info">
+                    <h4>ℹ️ Sobre a Norma ISO 6431</h4>
+                    <p>
+                        A norma ISO 6431 (antiga VDMA 24562) define as dimensões principais e características 
+                        de cilindros pneumáticos de dupla ação. Esta norma garante a intercambialidade entre 
+                        fabricantes e especifica diâmetros padrão, cursos, tipos de montagem e conexões.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dimensões padrão conforme ISO 6431
+        const ISO_DIMENSIONS = {
+            32: { rod: 12, port: 'G1/8', length_base: 105 },
+            40: { rod: 16, port: 'G1/4', length_base: 120 },
+            50: { rod: 20, port: 'G1/4', length_base: 135 },
+            63: { rod: 28, port: 'G3/8', length_base: 155 },
+            80: { rod: 28, port: 'G3/8', length_base: 175 },
+            100: { rod: 36, port: 'G1/2', length_base: 200 },
+            125: { rod: 45, port: 'G1/2', length_base: 230 },
+            160: { rod: 55, port: 'G3/4', length_base: 270 },
+            200: { rod: 70, port: 'G3/4', length_base: 320 },
+            250: { rod: 85, port: 'G1', length_base: 380 }
+        };
+
+        let canvas, ctx;
+
+        function init() {
+            canvas = document.getElementById('cylinderCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Ajustar resolução do canvas
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * 2;
+            canvas.height = rect.height * 2;
+            ctx.scale(2, 2);
+
+            // Event listeners
+            document.querySelectorAll('select, input').forEach(el => {
+                el.addEventListener('change', drawCylinder);
+                if (el.type === 'number') {
+                    el.addEventListener('input', drawCylinder);
+                }
+            });
+
+            // Redimensionar quando a janela mudar
+            window.addEventListener('resize', () => {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * 2;
+                canvas.height = rect.height * 2;
+                ctx.scale(2, 2);
+                drawCylinder();
+            });
+
+            drawCylinder();
+        }
+
+        function getDimensions() {
+            const bore = parseInt(document.getElementById('boreSize').value);
+            const stroke = parseInt(document.getElementById('strokeLength').value);
+            const rod = parseInt(document.getElementById('rodDiameter').value);
+            const mounting = document.getElementById('mountingType').value;
+            const iso = ISO_DIMENSIONS[bore] || ISO_DIMENSIONS[63];
+
+            return {
+                bore,
+                stroke,
+                rod,
+                mounting,
+                port: iso.port,
+                baseLength: iso.length_base,
+                totalLength: iso.length_base + stroke
+            };
+        }
+
+        function drawCylinder() {
+            const dims = getDimensions();
+            const showDims = document.getElementById('showDimensions').checked;
+            const showPorts = document.getElementById('showPorts').checked;
+            const showMagnetic = document.getElementById('showMagnetic').checked;
+
+            // Limpar canvas
+            ctx.clearRect(0, 0, canvas.width / 2, canvas.height / 2);
+
+            const centerX = canvas.width / 4;
+            const centerY = canvas.height / 4;
+            const scale = Math.min(300 / dims.bore, 2);
+
+            // Dimensões escaladas
+            const boreRadius = (dims.bore / 2) * scale;
+            const rodRadius = (dims.rod / 2) * scale;
+            const strokeLength = dims.stroke * scale * 0.5;
+            const headLength = 40 * scale;
+            const capLength = 40 * scale;
+
+            // Cores
+            const barrelColor = '#bdc3c7';
+            const rodColor = '#95a5a6';
+            const headColor = '#7f8c8d';
+            const portColor = '#e74c3c';
+
+            // Desenhar haste (rod)
+            ctx.fillStyle = rodColor;
+            ctx.fillRect(centerX - strokeLength - headLength - 20, centerY - rodRadius,
+                        strokeLength + headLength + 40, rodRadius * 2);
+
+            // Desenhar corpo do cilindro (barrel)
+            const gradient = ctx.createLinearGradient(centerX - strokeLength/2, centerY - boreRadius,
+                                                      centerX - strokeLength/2, centerY + boreRadius);
+            gradient.addColorStop(0, '#95a5a6');
+            gradient.addColorStop(0.3, '#bdc3c7');
+            gradient.addColorStop(0.5, '#ecf0f1');
+            gradient.addColorStop(0.7, '#bdc3c7');
+            gradient.addColorStop(1, '#95a5a6');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(centerX - strokeLength - headLength, centerY - boreRadius,
+                        strokeLength + headLength + capLength, boreRadius * 2);
+
+            // Bordas do corpo
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(centerX - strokeLength - headLength, centerY - boreRadius,
+                          strokeLength + headLength + capLength, boreRadius * 2);
+
+            // Cabeçote frontal (head)
+            ctx.fillStyle = headColor;
+            ctx.fillRect(centerX - headLength - 10, centerY - boreRadius - 5,
+                        headLength + 10, boreRadius * 2 + 10);
+
+            // Tampão traseiro (cap)
+            ctx.fillRect(centerX - strokeLength - headLength - capLength,
+                        centerY - boreRadius - 5, capLength, boreRadius * 2 + 10);
+
+            // Porcas de fixação
+            ctx.fillStyle = '#34495e';
+            const nutWidth = 15;
+            const nutHeight = boreRadius * 2 + 15;
+            
+            // 4 porcas longitudinais
+            for (let i = 0; i < 4; i++) {
+                const angle = (i * 90) * Math.PI / 180;
+                const nx = centerX - strokeLength/2 - headLength/2 + Math.cos(angle) * boreRadius * 0.8;
+                const ny = centerY + Math.sin(angle) * boreRadius * 0.8;
+                
+                ctx.beginPath();
+                ctx.arc(nx, ny, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Portas de ar
+            if (showPorts) {
+                ctx.fillStyle = portColor;
+                const portRadius = 8;
+                
+                // Porta traseira
+                ctx.beginPath();
+                ctx.arc(centerX - strokeLength - headLength - capLength - 10,
+                       centerY - boreRadius * 0.5, portRadius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Porta frontal
+                ctx.beginPath();
+                ctx.arc(centerX + capLength + 10, centerY - boreRadius * 0.5, portRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Labels das portas
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText('Port 1', centerX - strokeLength - headLength - capLength - 25,
+                            centerY - boreRadius * 0.5 - 15);
+                ctx.fillText('Port 2', centerX + capLength + 15, centerY - boreRadius * 0.5 - 15);
+            }
+
+            // Indicador magnético
+            if (showMagnetic) {
+                ctx.fillStyle = '#f39c12';
+                ctx.fillRect(centerX - strokeLength/2 - 15, centerY - boreRadius - 15, 30, 10);
+            }
+
+            // Tipo de montagem
+            drawMounting(dims.mounting, centerX, centerY, boreRadius, strokeLength, headLength, capLength, scale);
+
+            // Cotas e dimensões
+            if (showDims) {
+                drawDimensions(dims, centerX, centerY, boreRadius, strokeLength, headLength, capLength, scale);
+            }
+
+            // Título
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Cilindro Pneumático Ø${dims.bore}mm - Curso ${dims.stroke}mm`,
+                        centerX - strokeLength/2, 40);
+
+            // Atualizar painel de informações
+            updateInfoPanel(dims);
+        }
+
+        function drawMounting(type, cx, cy, boreR, stroke, headL, capL, scale) {
+            ctx.fillStyle = '#34495e';
+            const mountThickness = 15;
+
+            switch(type) {
+                case 'foot':
+                    // Pés de montagem
+                    const footWidth = boreR * 2.5;
+                    const footHeight = 30;
+                    
+                    // Pé frontal
+                    ctx.fillRect(cx + capL - 20, cy + boreR, footWidth, footHeight);
+                    ctx.beginPath();
+                    ctx.arc(cx + capL - 20 + footWidth/2, cy + boreR + footHeight, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Pé traseiro
+                    ctx.fillRect(cx - stroke - headL - footWidth + 20, cy + boreR, footWidth, footHeight);
+                    ctx.beginPath();
+                    ctx.arc(cx - stroke - headL - footWidth + 20 + footWidth/2, cy + boreR + footHeight, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+
+                case 'flange_front':
+                    // Flange frontal
+                    ctx.fillRect(cx + capL - 10, cy - boreR * 1.8, 20, boreR * 3.6);
+                    // Furos do flange
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (45 + i * 90) * Math.PI / 180;
+                        const fx = cx + capL + Math.cos(angle) * boreR * 1.3;
+                        const fy = cy + Math.sin(angle) * boreR * 1.3;
+                        ctx.beginPath();
+                        ctx.arc(fx, fy, 6, 0, Math.PI * 2);
+                        ctx.fillStyle = '#ecf0f1';
+                        ctx.fill();
+                        ctx.fillStyle = '#34495e';
+                    }
+                    break;
+
+                case 'flange_rear':
+                    // Flange traseiro
+                    ctx.fillRect(cx - stroke - headL - capL - 10, cy - boreR * 1.8, 20, boreR * 3.6);
+                    // Furos do flange
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (45 + i * 90) * Math.PI / 180;
+                        const fx = cx - stroke - headL - capL - 10 + Math.cos(angle) * boreR * 1.3;
+                        const fy = cy + Math.sin(angle) * boreR * 1.3;
+                        ctx.beginPath();
+                        ctx.arc(fx, fy, 6, 0, Math.PI * 2);
+                        ctx.fillStyle = '#ecf0f1';
+                        ctx.fill();
+                        ctx.fillStyle = '#34495e';
+                    }
+                    break;
+
+                case 'clevis':
+                    // Olhal articulado na haste
+                    const clevisX = cx - stroke - headL - 50;
+                    ctx.fillRect(clevisX - 15, cy - 20, 30, 40);
+                    ctx.beginPath();
+                    ctx.arc(clevisX, cy, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(clevisX, cy, 6, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ecf0f1';
+                    ctx.fill();
+                    break;
+
+                case 'trunnion':
+                    // Mancais laterais
+                    ctx.fillRect(cx - stroke/2 - headL/2, cy - boreR - 40, 40, 20);
+                    ctx.fillRect(cx - stroke/2 - headL/2, cy + boreR + 20, 40, 20);
+                    ctx.beginPath();
+                    ctx.arc(cx - stroke/2 - headL/2 + 20, cy - boreR - 30, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(cx - stroke/2 - headL/2 + 20, cy + boreR + 30, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+            }
+        }
+
+        function drawDimensions(dims, cx, cy, boreR, stroke, headL, capL, scale) {
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#e74c3c';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+
+            const dimY = cy + boreR + 60;
+
+            // Linha de cota do curso
+            ctx.beginPath();
+            ctx.moveTo(cx - stroke - headL, dimY);
+            ctx.lineTo(cx + capL, dimY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx - stroke - headL, dimY - 10);
+            ctx.lineTo(cx - stroke - headL, dimY + 10);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx + capL, dimY - 10);
+            ctx.lineTo(cx + capL, dimY + 10);
+            ctx.stroke();
+
+            ctx.fillText(`${dims.stroke}mm`, cx - stroke/2 - headL/2 + capL/2, dimY + 25);
+
+            // Diâmetro do êmbolo
+            ctx.textAlign = 'left';
+            ctx.fillText(`Ø${dims.bore}mm`, cx + capL + 30, cy - boreR/2);
+
+            // Diâmetro da haste
+            ctx.fillText(`Ø${dims.rod}mm`, cx - stroke - headL - 40, cy - boreR/2);
+
+            // Comprimento total
+            const totalDimY = dimY + 40;
+            ctx.beginPath();
+            ctx.moveTo(cx - stroke - headL - capL - 10, totalDimY);
+            ctx.lineTo(cx + capL + 20, totalDimY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx - stroke - headL - capL - 10, totalDimY - 10);
+            ctx.lineTo(cx - stroke - headL - capL - 10, totalDimY + 10);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx + capL + 20, totalDimY - 10);
+            ctx.lineTo(cx + capL + 20, totalDimY + 10);
+            ctx.stroke();
+
+            ctx.textAlign = 'center';
+            ctx.fillText(`${dims.totalLength}mm`, cx - stroke/2 - headL/2, totalDimY + 25);
+        }
+
+        function updateInfoPanel(dims) {
+            const grid = document.getElementById('dimensionGrid');
+            const iso = ISO_DIMENSIONS[dims.bore];
+
+            grid.innerHTML = `
+                <div class="dimension-item">
+                    <div class="label">Diâmetro do Êmbolo</div>
+                    <div class="value">${dims.bore} mm</div>
+                </div>
+                <div class="dimension-item">
+                    <div class="label">Diâmetro da Haste</div>
+                    <div class="value">${dims.rod} mm</div>
+                </div>
+                <div class="dimension-item">
+                    <div class="label">Curso</div>
+                    <div class="value">${dims.stroke} mm</div>
+                </div>
+                <div class="dimension-item">
+                    <div class="label">Comprimento Total</div>
+                    <div class="value">${dims.totalLength} mm</div>
+                </div>
+                <div class="dimension-item">
+                    <div class="label">Conexão de Ar</div>
+                    <div class="value">${iso.port}</div>
+                </div>
+                <div class="dimension-item">
+                    <div class="label">Tipo de Montagem</div>
+                    <div class="value">${getMountingName(dims.mounting)}</div>
+                </div>
+                <div class="dimension-item">
+                    <div class="label">Área Efetiva (Avanço)</div>
+                    <div class="value">${(Math.PI * Math.pow(dims.bore/2, 2)).toFixed(0)} mm²</div>
+                </div>
+                <div class="dimension-item">
+                    <div class="label">Área Efetiva (Retorno)</div>
+                    <div class="value">${(Math.PI * (Math.pow(dims.bore/2, 2) - Math.pow(dims.rod/2, 2))).toFixed(0)} mm²</div>
+                </div>
+            `;
+        }
+
+        function getMountingName(type) {
+            const names = {
+                'foot': 'Pés (MS1)',
+                'flange_front': 'Flange Frontal (MF1)',
+                'flange_rear': 'Flange Traseiro (MF2)',
+                'clevis': 'Olhal Articulado (MP2)',
+                'trunnion': 'Mancais Laterais (MT1)'
+            };
+            return names[type] || type;
+        }
+
+        function exportImage() {
+            const link = document.createElement('a');
+            link.download = 'cilindro-pneumatico.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
