@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Pneumática Completa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background: #e8f4f8;
+            color: #3498db;
+        }
+
+        .tab-button.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .results {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+
+        .results h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .info-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 8px;
+        }
+
+        .info-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .info-section ul {
+            list-style-position: inside;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        /* Converter Styles */
+        .converter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .brand-selector {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .brand-selector h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .conversion-result {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .conversion-result h3 {
+            margin-bottom: 15px;
+        }
+
+        .equivalence-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .equivalence-table th,
+        .equivalence-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .equivalence-table th {
+            background: #3498db;
+            color: white;
+        }
+
+        .equivalence-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-smc {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .badge-festo {
+            background: #3498db;
+            color: white;
+        }
+
+        .badge-parker {
+            background: #f39c12;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                border-bottom: 2px solid #e0e0e0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💨 Calculadora Pneumática Completa</h1>
+            <p>Ferramentas profissionais para automação industrial</p>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('consumo')">📊 Consumo de Ar</button>
+            <button class="tab-button" onclick="openTab('conversor')">🔄 Conversor SMC ↔ Festo</button>
+            <button class="tab-button" onclick="openTab('forca')">💪 Força do Cilindro</button>
+            <button class="tab-button" onclick="openTab('vazao')">💨 Vazão de Válvulas</button>
+        </div>
+
+        <!-- Tab 1: Calculadora de Consumo -->
+        <div id="consumo" class="tab-content active">
+            <form id="calculatorForm">
+                <div class="form-group">
+                    <label for="diametro">Diâmetro do Cilindro (mm)</label>
+                    <input type="number" id="diametro" placeholder="Ex: 50" required min="1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="curso">Curso do Pistão (mm)</label>
+                    <input type="number" id="curso" placeholder="Ex: 200" required min="1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="haste">Diâmetro da Haste (mm)</label>
+                    <input type="number" id="haste" placeholder="Ex: 16" required min="1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="pressao">Pressão de Trabalho (bar)</label>
+                    <input type="number" id="pressao" placeholder="Ex: 6" required min="0.1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="ciclos">Ciclos por Minuto</label>
+                    <input type="number" id="ciclos" placeholder="Ex: 10" required min="1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo">Tipo de Cilindro</label>
+                    <select id="tipo" required>
+                        <option value="dupla">Dupla Ação</option>
+                        <option value="simples">Simples Ação</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-calculate">Calcular Consumo</button>
+            </form>
+
+            <div class="results" id="results" style="display: none;">
+                <h2>📊 Resultados do Cálculo</h2>
+                <div class="result-item">
+                    <span class="result-label">Área do Pistão:</span>
+                    <span class="result-value" id="areaPistao">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Volume por Curso (Avanço):</span>
+                    <span class="result-value" id="volumeAvanco">-</span>
+                </div>
+                <div class="result-item" id="volumeRetornoItem">
+                    <span class="result-label">Volume por Curso (Retorno):</span>
+                    <span class="result-value" id="volumeRetorno">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Consumo por Ciclo:</span>
+                    <span class="result-value" id="consumoCiclo">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Consumo por Minuto:</span>
+                    <span class="result-value" id="consumoMinuto">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Consumo por Hora:</span>
+                    <span class="result-value" id="consumoHora">-</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>ℹ️ Informações Técnicas</h3>
+                <ul>
+                    <li><strong>Fórmula da Área:</strong> A = π × (D/2)²</li>
+                    <li><strong>Volume de Avanço:</strong> V₁ = A × C</li>
+                    <li><strong>Volume de Retorno:</strong> V₂ = (A - A_haste) × C</li>
+                    <li><strong>Consumo em NL:</strong> Q = (V × (P + 1)) / 1000</li>
+                    <li>NL = Normal Liters (litros nas condições normais: 1 atm, 20°C)</li>
+                    <li>Para cilindros de simples ação, o retorno é por mola e não consome ar</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab 2: Conversor SMC ↔ Festo -->
+        <div id="conversor" class="tab-content">
+            <h2 style="margin-bottom: 20px; color: #2c3e50;">🔄 Conversor de Válvulas - SMC para Festo</h2>
+            <p style="margin-bottom: 30px; color: #555;">Converta referências de válvulas solenoides entre os principais fabricantes</p>
+
+            <div class="converter-grid">
+                <div class="brand-selector">
+                    <h3>Marca de Origem</h3>
+                    <select id="origemBrand" onchange="updateModelos()">
+                        <option value="smc">SMC</option>
+                        <option value="festo">Festo</option>
+                        <option value="parker">Parker</option>
+                    </select>
+                </div>
+
+                <div class="brand-selector">
+                    <h3>Modelo SMC</h3>
+                    <select id="modeloOrigem" onchange="converterValvula()">
+                        <option value="">Selecione um modelo...</option>
+                        <optgroup label="Série SY3000">
+                            <option value="SY3120-5LZ-C6">SY3120-5LZ-C6 (3/2 vias)</option>
+                            <option value="SY3220-5LZ-C6">SY3220-5LZ-C6 (5/2 vias)</option>
+                            <option value="SY3320-5LZ-C6">SY3320-5LZ-C6 (5/3 vias)</option>
+                        </optgroup>
+                        <optgroup label="Série SY5000">
+                            <option value="SY5120-5LZ-C6">SY5120-5LZ-C6 (3/2 vias)</option>
+                            <option value="SY5220-5LZ-C6">SY5220-5LZ-C6 (5/2 vias)</option>
+                            <option value="SY5320-5LZ-C6">SY5320-5LZ-C6 (5/3 vias)</option>
+                        </optgroup>
+                        <optgroup label="Série SY7000">
+                            <option value="SY7120-5LZ-C8">SY7120-5LZ-C8 (3/2 vias)</option>
+                            <option value="SY7220-5LZ-C8">SY7220-5LZ-C8 (5/2 vias)</option>
+                            <option value="SY7320-5LZ-C8">SY7320-5LZ-C8 (5/3 vias)</option>
+                        </optgroup>
+                        <optgroup label="Série VX">
+                            <option value="VX2120-02-5D">VX2120-02-5D (3/2 vias)</option>
+                            <option value="VX2220-02-5D">VX2220-02-5D (5/2 vias)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="brand-selector">
+                    <h3>Marca de Destino</h3>
+                    <select id="destinoBrand" disabled>
+                        <option value="festo">Festo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="conversion-result" id="conversionResult" style="display: none;">
+                <h3>✅ Equivalência Encontrada</h3>
+                <div class="result-item">
+                    <span class="result-label">Modelo Original:</span>
+                    <span class="result-value"><span class="badge badge-smc" id="badgeOriginal">SMC</span> <span id="modeloOriginal"></span></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Modelo Equivalente:</span>
+                    <span class="result-value"><span class="badge badge-festo" id="badgeEquivalente">Festo</span> <span id="modeloEquivalente"></span></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Tipo:</span>
+                    <span class="result-value" id="tipoValvula"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Vazão (ANR):</span>
+                    <span class="result-value" id="vazaoValvula"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Pressão de Trabalho:</span>
+                    <span class="result-value" id="pressaoValvula"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Tensão:</span>
+                    <span class="result-value" id="tensaoValvula"></span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>ℹ️ Tabela de Equivalências Rápidas</h3>
+                <table class="equivalence-table">
+                    <thead>
+                        <tr>
+                            <th>SMC</th>
+                            <th>Festo</th>
+                            <th>Tipo</th>
+                            <th>Vazão</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-smc">SMC</span> SY3220</td>
+                            <td><span class="badge badge-festo">Festo</span> CPE10-M1BH-5/2G</td>
+                            <td>5/2 vias</td>
+                            <td>400 L/min</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-smc">SMC</span> SY5220</td>
+                            <td><span class="badge badge-festo">Festo</span> CPE14-M1BH-5/2G</td>
+                            <td>5/2 vias</td>
+                            <td>800 L/min</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-smc">SMC</span> SY7220</td>
+                            <td><span class="badge badge-festo">Festo</span> CPE18-M1H-5/2G</td>
+                            <td>5/2 vias</td>
+                            <td>1400 L/min</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-smc">SMC</span> VX2220</td>
+                            <td><span class="badge badge-festo">Festo</span> MFH-5/2-D-1</td>
+                            <td>5/2 vias</td>
+                            <td>1000 L/min</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 3: Calculadora de Força -->
+        <div id="forca" class="tab-content">
+            <h2 style="margin-bottom: 20px; color: #2c3e50;">💪 Calculadora de Força do Cilindro</h2>
+            <p style="margin-bottom: 30px; color: #555;">Calcule a força teórica de avanço e retorno de cilindros pneumáticos</p>
+
+            <form id="forcaForm">
+                <div class="form-group">
+                    <label for="diametroForca">Diâmetro do Cilindro (mm)</label>
+                    <input type="number" id="diametroForca" placeholder="Ex: 50" required min="1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="hasteForca">Diâmetro da Haste (mm)</label>
+                    <input type="number" id="hasteForca" placeholder="Ex: 16" required min="1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="pressaoForca">Pressão de Trabalho (bar)</label>
+                    <input type="number" id="pressaoForca" placeholder="Ex: 6" required min="0.1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="rendimento">Rendimento Mecânico (%)</label>
+                    <input type="number" id="rendimento" placeholder="Ex: 90" value="90" min="1" max="100" step="1">
+                </div>
+
+                <button type="submit" class="btn-calculate">Calcular Força</button>
+            </form>
+
+            <div class="results" id="resultsForca" style="display: none;">
+                <h2>💪 Resultados da Força</h2>
+                <div class="result-item">
+                    <span class="result-label">Área do Pistão:</span>
+                    <span class="result-value" id="areaPistaoForca">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Área da Haste:</span>
+                    <span class="result-value" id="areaHasteForca">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Força de Avanço Teórica:</span>
+                    <span class="result-value" id="forcaAvanco">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Força de Avanço Real:</span>
+                    <span class="result-value" id="forcaAvancoReal">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Força de Retorno Teórica:</span>
+                    <span class="result-value" id="forcaRetorno">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Força de Retorno Real:</span>
+                    <span class="result-value" id="forcaRetornoReal">-</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>ℹ️ Informações Técnicas</h3>
+                <ul>
+                    <li><strong>Força de Avanço:</strong> F = P × A × η</li>
+                    <li><strong>Força de Retorno:</strong> F = P × (A - A_haste) × η</li>
+                    <li>P = Pressão (bar), A = Área (cm²), η = Rendimento</li>
+                    <li>O rendimento mecânico típico varia de 80% a 95%</li>
+                    <li>1 bar = 1.02 kgf/cm² ≈ 10 N/cm²</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab 4: Calculadora de Vazão -->
+        <div id="vazao" class="tab-content">
+            <h2 style="margin-bottom: 20px; color: #2c3e50;">💨 Dimensionamento de Vazão de Válvulas</h2>
+            <p style="margin-bottom: 30px; color: #555;">Calcule a vazão necessária da válvula para seu cilindro</p>
+
+            <form id="vazaoForm">
+                <div class="form-group">
+                    <label for="diametroVazao">Diâmetro do Cilindro (mm)</label>
+                    <input type="number" id="diametroVazao" placeholder="Ex: 50" required min="1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="cursoVazao">Curso do Pistão (mm)</label>
+                    <input type="number" id="cursoVazao" placeholder="Ex: 200" required min="1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="tempo">Tempo de Curso (segundos)</label>
+                    <input type="number" id="tempo" placeholder="Ex: 1" required min="0.1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="pressaoVazao">Pressão de Trabalho (bar)</label>
+                    <input type="number" id="pressaoVazao" placeholder="Ex: 6" required min="0.1" step="0.1">
+                </div>
+
+                <button type="submit" class="btn-calculate">Calcular Vazão Necessária</button>
+            </form>
+
+            <div class="results" id="resultsVazao" style="display: none;">
+                <h2>💨 Resultados de Vazão</h2>
+                <div class="result-item">
+                    <span class="result-label">Volume do Cilindro:</span>
+                    <span class="result-value" id="volumeCilindro">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Consumo por Ciclo (NL):</span>
+                    <span class="result-value" id="consumoCicloVazao">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Vazão Necessária:</span>
+                    <span class="result-value" id="vazaoNecessaria">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Vazão com Fator Segurança (1.5x):</span>
+                    <span class="result-value" id="vazaoSeguranca">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Bitola Recomendada:</span>
+                    <span class="result-value" id="bitolaRecomendada">-</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>ℹ️ Informações Técnicas</h3>
+                <ul>
+                    <li><strong>Vazão:</strong> Q = (Volume × (P + 1)) / tempo</li>
+                    <li>Fator de segurança recomendado: 1.5 a 2.0</li>
+                    <li>Considere sempre perdas de carga na tubulação</li>
+                    <li>Bitolas comuns: G1/8", G1/4", G3/8", G1/2"</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para alternar entre tabs
+        function openTab(tabName) {
+            // Esconder todos os conteúdos
+            const contents = document.getElementsByClassName('tab-content');
+            for (let content of contents) {
+                content.classList.remove('active');
+            }
+
+            // Remover classe active de todos os botões
+            const buttons = document.getElementsByClassName('tab-button');
+            for (let button of buttons) {
+                button.classList.remove('active');
+            }
+
+            // Mostrar o conteúdo selecionado
+            document.getElementById(tabName).classList.add('active');
+
+            // Adicionar classe active ao botão clicado
+            event.currentTarget.classList.add('active');
+        }
+
+        // Tab 1: Calculadora de Consumo de Ar
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const diametro = parseFloat(document.getElementById('diametro').value);
+            const curso = parseFloat(document.getElementById('curso').value);
+            const haste = parseFloat(document.getElementById('haste').value);
+            const pressao = parseFloat(document.getElementById('pressao').value);
+            const ciclos = parseFloat(document.getElementById('ciclos').value);
+            const tipo = document.getElementById('tipo').value;
+
+            const raio = diametro / 2;
+            const areaPistao = Math.PI * Math.pow(raio, 2) / 100;
+
+            const raioHaste = haste / 2;
+            const areaHaste = Math.PI * Math.pow(raioHaste, 2) / 100;
+
+            const volumeAvanco = areaPistao * (curso / 10);
+            const volumeRetorno = (areaPistao - areaHaste) * (curso / 10);
+
+            const consumoAvanco = (volumeAvanco * (pressao + 1)) / 1000;
+            const consumoRetorno = tipo === 'dupla' ? (volumeRetorno * (pressao + 1)) / 1000 : 0;
+            const consumoCiclo = consumoAvanco + consumoRetorno;
+
+            const consumoMinuto = consumoCiclo * ciclos;
+            const consumoHora = consumoMinuto * 60 / 1000;
+
+            document.getElementById('areaPistao').textContent = areaPistao.toFixed(2) + ' cm²';
+            document.getElementById('volumeAvanco').textContent = volumeAvanco.toFixed(2) + ' cm³';
+            
+            if (tipo === 'dupla') {
+                document.getElementById('volumeRetornoItem').style.display = 'flex';
+                document.getElementById('volumeRetorno').textContent = volumeRetorno.toFixed(2) + ' cm³';
+            } else {
+                document.getElementById('volumeRetornoItem').style.display = 'none';
+            }
+            
+            document.getElementById('consumoCiclo').textContent = consumoCiclo.toFixed(3) + ' NL/ciclo';
+            document.getElementById('consumoMinuto').textContent = consumoMinuto.toFixed(3) + ' NL/min';
+            document.getElementById('consumoHora').textContent = consumoHora.toFixed(3) + ' Nm³/h';
+
+            document.getElementById('results').style.display = 'block';
+        });
+
+        // Tab 2: Conversor de Válvulas
+        const equivalencias = {
+            'SY3120-5LZ-C6': { festo: 'CPE10-M1BH-3/2G-10', tipo: '3/2 vias', vazao: '300 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'SY3220-5LZ-C6': { festo: 'CPE10-M1BH-5/2G-10', tipo: '5/2 vias', vazao: '400 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'SY3320-5LZ-C6': { festo: 'CPE10-M1BH-5/3G-10', tipo: '5/3 vias', vazao: '350 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'SY5120-5LZ-C6': { festo: 'CPE14-M1BH-3/2G-14', tipo: '3/2 vias', vazao: '600 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'SY5220-5LZ-C6': { festo: 'CPE14-M1BH-5/2G-14', tipo: '5/2 vias', vazao: '800 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'SY5320-5LZ-C6': { festo: 'CPE14-M1BH-5/3G-14', tipo: '5/3 vias', vazao: '700 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'SY7120-5LZ-C8': { festo: 'CPE18-M1H-3/2G-18', tipo: '3/2 vias', vazao: '1000 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'SY7220-5LZ-C8': { festo: 'CPE18-M1H-5/2G-18', tipo: '5/2 vias', vazao: '1400 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'SY7320-5LZ-C8': { festo: 'CPE18-M1H-5/3G-18', tipo: '5/3 vias', vazao: '1200 L/min', pressao: '2-8 bar', tensao: '24VDC' },
+            'VX2120-02-5D': { festo: 'MFH-3/2-D-1', tipo: '3/2 vias', vazao: '800 L/min', pressao: '2.5-10 bar', tensao: '24VDC' },
+            'VX2220-02-5D': { festo: 'MFH-5/2-D-1', tipo: '5/2 vias', vazao: '1000 L/min', pressao: '2.5-10 bar', tensao: '24VDC' }
+        };
+
+        function updateModelos() {
+            const origem = document.getElementById('origemBrand').value;
+            const select = document.getElementById('modeloOrigem');
+            
+            // Atualizar opções baseado na marca de origem
+            if (origem !== 'smc') {
+                alert('Funcionalidade completa disponível apenas para SMC → Festo nesta versão.');
+                document.getElementById('origemBrand').value = 'smc';
+            }
+        }
+
+        function converterValvula() {
+            const modelo = document.getElementById('modeloOrigem').value;
+            
+            if (!modelo) {
+                document.getElementById('conversionResult').style.display = 'none';
+                return;
+            }
+
+            const equivalente = equivalencias[modelo];
+            
+            if (equivalente) {
+                document.getElementById('modeloOriginal').textContent = modelo;
+                document.getElementById('modeloEquivalente').textContent = equivalente.festo;
+                document.getElementById('tipoValvula').textContent = equivalente.tipo;
+                document.getElementById('vazaoValvula').textContent = equivalente.vazao;
+                document.getElementById('pressaoValvula').textContent = equivalente.pressao;
+                document.getElementById('tensaoValvula').textContent = equivalente.tensao;
+                
+                document.getElementById('conversionResult').style.display = 'block';
+            }
+        }
+
+        // Tab 3: Calculadora de Força
+        document.getElementById('forcaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const diametro = parseFloat(document.getElementById('diametroForca').value);
+            const haste = parseFloat(document.getElementById('hasteForca').value);
+            const pressao = parseFloat(document.getElementById('pressaoForca').value);
+            const rendimento = parseFloat(document.getElementById('rendimento').value) / 100;
+
+            const raio = diametro / 2;
+            const areaPistao = Math.PI * Math.pow(raio, 2) / 100;
+
+            const raioHaste = haste / 2;
+            const areaHaste = Math.PI * Math.pow(raioHaste, 2) / 100;
+
+            // Força em Newtons (1 bar = 10 N/cm²)
+            const forcaAvancoTeorica = pressao * 10 * areaPistao;
+            const forcaAvancoReal = forcaAvancoTeorica * rendimento;
+
+            const forcaRetornoTeorica = pressao * 10 * (areaPistao - areaHaste);
+            const forcaRetornoReal = forcaRetornoTeorica * rendimento;
+
+            document.getElementById('areaPistaoForca').textContent = areaPistao.toFixed(2) + ' cm²';
+            document.getElementById('areaHasteForca').textContent = areaHaste.toFixed(2) + ' cm²';
+            document.getElementById('forcaAvanco').textContent = forcaAvancoTeorica.toFixed(1) + ' N (' + (forcaAvancoTeorica / 9.81).toFixed(1) + ' kgf)';
+            document.getElementById('forcaAvancoReal').textContent = forcaAvancoReal.toFixed(1) + ' N (' + (forcaAvancoReal / 9.81).toFixed(1) + ' kgf)';
+            document.getElementById('forcaRetorno').textContent = forcaRetornoTeorica.toFixed(1) + ' N (' + (forcaRetornoTeorica / 9.81).toFixed(1) + ' kgf)';
+            document.getElementById('forcaRetornoReal').textContent = forcaRetornoReal.toFixed(1) + ' N (' + (forcaRetornoReal / 9.81).toFixed(1) + ' kgf)';
+
+            document.getElementById('resultsForca').style.display = 'block';
+        });
+
+        // Tab 4: Calculadora de Vazão
+        document.getElementById('vazaoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const diametro = parseFloat(document.getElementById('diametroVazao').value);
+            const curso = parseFloat(document.getElementById('cursoVazao').value);
+            const tempo = parseFloat(document.getElementById('tempo').value);
+            const pressao = parseFloat(document.getElementById('pressaoVazao').value);
+
+            const raio = diametro / 2;
+            const areaPistao = Math.PI * Math.pow(raio, 2) / 100;
+            const volumeCilindro = areaPistao * (curso / 10);
+
+            const consumoCiclo = (volumeCilindro * (pressao + 1)) / 1000;
+            const vazaoNecessaria = consumoCiclo / tempo * 60; // L/min
+            const vazaoSeguranca = vazaoNecessaria * 1.5;
+
+            // Determinar bitola recomendada
+            let bitola = 'G1/8"';
+            if (vazaoSeguranca > 200) bitola = 'G1/4"';
+            if (vazaoSeguranca > 500) bitola = 'G3/8"';
+            if (vazaoSeguranca > 1000) bitola = 'G1/2"';
+            if (vazaoSeguranca > 2000) bitola = 'G3/4"';
+
+            document.getElementById('volumeCilindro').textContent = volumeCilindro.toFixed(2) + ' cm³';
+            document.getElementById('consumoCicloVazao').textContent = consumoCiclo.toFixed(3) + ' NL';
+            document.getElementById('vazaoNecessaria').textContent = vazaoNecessaria.toFixed(1) + ' NL/min';
+            document.getElementById('vazaoSeguranca').textContent = vazaoSeguranca.toFixed(1) + ' NL/min';
+            document.getElementById('bitolaRecomendada').textContent = bitola;
+
+            document.getElementById('resultsVazao').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
