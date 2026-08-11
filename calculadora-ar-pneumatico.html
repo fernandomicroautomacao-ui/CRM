@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Consumo de Ar - Cilindros Pneumáticos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-group small {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 22px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .result-card.highlight {
+            border-left-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .result-card.success {
+            border-left-color: #27ae60;
+            background: #f0fff4;
+        }
+
+        .result-card h3 {
+            color: #7f8c8d;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .result-card .value {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .result-card .unit {
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .formula-info {
+            margin-top: 25px;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #2c3e50;
+        }
+
+        .formula-info h4 {
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+
+        .formula-info code {
+            background: #2c3e50;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .info-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            margin-left: 5px;
+            cursor: help;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Calculadora de Consumo de Ar</h1>
+            <p>Cilindros Pneumáticos - Cálculo de Consumo de Ar Comprimido</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="diametro">Diâmetro do Cilindro (D)</label>
+                    <input type="number" id="diametro" placeholder="Ex: 50" step="0.1" required>
+                    <small>mm - Diâmetro interno do cilindro</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="curso">Curso (C)</label>
+                    <input type="number" id="curso" placeholder="Ex: 200" step="1" required>
+                    <small>mm - Comprimento do curso do pistão</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="diametroHaste">Diâmetro da Haste (d)</label>
+                    <input type="number" id="diametroHaste" placeholder="Ex: 16" step="0.1" value="16">
+                    <small>mm - Diâmetro da haste do pistão</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="pressao">Pressão de Trabalho (P)</label>
+                    <input type="number" id="pressao" placeholder="Ex: 6" step="0.1" value="6">
+                    <small>bar - Pressão relativa de trabalho</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="ciclos">Ciclos por Minuto</label>
+                    <input type="number" id="ciclos" placeholder="Ex: 10" step="1" value="10">
+                    <small>ciclos/min - Número de ciclos completos por minuto</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipoCilindro">Tipo de Cilindro</label>
+                    <select id="tipoCilindro">
+                        <option value="simples">Ação Simples</option>
+                        <option value="dupla" selected>Ação Dupla</option>
+                    </select>
+                    <small>Selecione o tipo de cilindro</small>
+                </div>
+            </div>
+
+            <button class="btn-calculate" onclick="calcularConsumo()">
+                📊 Calcular Consumo de Ar
+            </button>
+
+            <div class="results" id="results">
+                <h2>📈 Resultados do Cálculo</h2>
+                
+                <div class="result-grid">
+                    <div class="result-card success">
+                        <h3>Área do Pistão</h3>
+                        <div class="value" id="areaPistao">0<span class="unit"> cm²</span></div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Volume por Curso (Avanço)</h3>
+                        <div class="value" id="volumeAvanco">0<span class="unit"> cm³</span></div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Volume por Curso (Retorno)</h3>
+                        <div class="value" id="volumeRetorno">0<span class="unit"> cm³</span></div>
+                    </div>
+
+                    <div class="result-card highlight">
+                        <h3>Consumo por Ciclo</h3>
+                        <div class="value" id="consumoCiclo">0<span class="unit"> NL/ciclo</span></div>
+                    </div>
+
+                    <div class="result-card highlight">
+                        <h3>Consumo por Minuto</h3>
+                        <div class="value" id="consumoMinuto">0<span class="unit"> NL/min</span></div>
+                    </div>
+
+                    <div class="result-card success">
+                        <h3>Consumo por Hora</h3>
+                        <div class="value" id="consumoHora">0<span class="unit"> Nm³/h</span></div>
+                    </div>
+                </div>
+
+                <div class="formula-info">
+                    <h4>📚 Fórmulas Utilizadas:</h4>
+                    <p><strong>Área do pistão:</strong> A = π × (D/2)²</p>
+                    <p><strong>Volume de avanço:</strong> V₁ = A × C</p>
+                    <p><strong>Volume de retorno (ação dupla):</strong> V₂ = (A - A<sub>haste</sub>) × C</p>
+                    <p><strong>Consumo em NL:</strong> Q = (V × (P + 1)) / 1000</p>
+                    <p><strong>Onde:</strong> <code>D</code> = diâmetro do cilindro, <code>C</code> = curso, <code>P</code> = pressão (bar), <code>NL</code> = Normal Liters (litros nas condições normais: 1 atm, 20°C)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calcularConsumo() {
+            // Obter valores dos inputs
+            const diametro = parseFloat(document.getElementById('diametro').value);
+            const curso = parseFloat(document.getElementById('curso').value);
+            const diametroHaste = parseFloat(document.getElementById('diametroHaste').value) || 0;
+            const pressao = parseFloat(document.getElementById('pressao').value);
+            const ciclos = parseFloat(document.getElementById('ciclos').value) || 0;
+            const tipoCilindro = document.getElementById('tipoCilindro').value;
+
+            // Validação básica
+            if (!diametro || !curso || !pressao) {
+                alert('Por favor, preencha todos os campos obrigatórios (diâmetro, curso e pressão).');
+                return;
+            }
+
+            // Cálculos
+            // Área do pistão (cm²)
+            const raio = diametro / 2; // mm
+            const areaPistao = Math.PI * Math.pow(raio, 2) / 100; // converte mm² para cm²
+
+            // Área da haste (cm²)
+            const raioHaste = diametroHaste / 2; // mm
+            const areaHaste = Math.PI * Math.pow(raioHaste, 2) / 100; // converte mm² para cm²
+
+            // Volume por curso (cm³)
+            const volumeAvanco = areaPistao * (curso / 10); // curso em cm
+            const volumeRetorno = (areaPistao - areaHaste) * (curso / 10);
+
+            // Consumo em NL (Normal Liters)
+            // Fórmula: Q = V × (P + 1) / 1000
+            // P é pressão relativa, adicionamos 1 para obter pressão absoluta
+            const consumoAvanco = (volumeAvanco * (pressao + 1)) / 1000;
+            const consumoRetorno = (volumeRetorno * (pressao + 1)) / 1000;
+
+            let consumoTotalCiclo;
+            if (tipoCilindro === 'simples') {
+                // Cilindro de ação simples: apenas avanço usa ar comprimido
+                consumoTotalCiclo = consumoAvanco;
+            } else {
+                // Cilindro de ação dupla: avanço e retorno usam ar
+                consumoTotalCiclo = consumoAvanco + consumoRetorno;
+            }
+
+            const consumoPorMinuto = consumoTotalCiclo * ciclos;
+            const consumoPorHora = (consumoPorMinuto * 60) / 1000; // converte para Nm³/h
+
+            // Exibir resultados
+            document.getElementById('areaPistao').innerHTML = `${areaPistao.toFixed(2)}<span class="unit"> cm²</span>`;
+            document.getElementById('volumeAvanco').innerHTML = `${volumeAvanco.toFixed(2)}<span class="unit"> cm³</span>`;
+            document.getElementById('volumeRetorno').innerHTML = `${volumeRetorno.toFixed(2)}<span class="unit"> cm³</span>`;
+            document.getElementById('consumoCiclo').innerHTML = `${consumoTotalCiclo.toFixed(3)}<span class="unit"> NL/ciclo</span>`;
+            document.getElementById('consumoMinuto').innerHTML = `${consumoPorMinuto.toFixed(2)}<span class="unit"> NL/min</span>`;
+            document.getElementById('consumoHora').innerHTML = `${consumoPorHora.toFixed(3)}<span class="unit"> Nm³/h</span>`;
+
+            // Mostrar seção de resultados com animação
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.add('show');
+            
+            // Scroll suave até os resultados
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Permitir cálculo ao pressionar Enter
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calcularConsumo();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
